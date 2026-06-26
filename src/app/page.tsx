@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/LogoMark";
 import { HubHero } from "@/components/HubHero";
+import { AppBackground } from "@/components/AppBackground";
 import { useSettings } from "@/lib/settings";
 
 const SECTIONS = [
@@ -36,7 +37,9 @@ const SECTIONS = [
 export default function Hub() {
   const { dark, toggleDark } = useSettings();
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      <AppBackground />
+
       <header className="h-[60px] flex items-center justify-between px-6 md:px-10 border-b border-line">
         <div className="flex items-center gap-3">
           <LogoMark size={36} />

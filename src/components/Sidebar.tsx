@@ -55,6 +55,19 @@ const DEV_GROUPS: Group[] = [
     ],
   },
   {
+    label: "Asset classes",
+    items: [
+      { href: "/development/sector/multifamily", name: "Multifamily", icon: "M3 21h18M6 21V4h6v17M12 21V9h6v12M9 8h0M9 12h0M9 16h0M15 12h0M15 16h0" },
+      { href: "/development/sector/single-family", name: "Single-family", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10" },
+      { href: "/development/sector/townhome", name: "Townhome & 2–4", icon: "M2 21V11l4-3 4 3v10M11 21V8l5-3 5 3v13M14 21v-5h3v5" },
+      { href: "/development/sector/industrial", name: "Industrial", icon: "M3 21V11l5 3V11l5 3V8l8 5v8H3ZM7 17h0M12 17h0M17 17h0" },
+      { href: "/development/sector/office", name: "Office", icon: "M5 21V4h9v17M14 10h5v11M8 8h0M8 12h0M8 16h0" },
+      { href: "/development/sector/retail", name: "Retail", icon: "M4 9l1-4h14l1 4M4 9v11h16V9M4 9h16M9 20v-6h6v6" },
+      { href: "/development/sector/affordable", name: "Affordable", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10M9 21v-5a3 3 0 0 1 6 0v5" },
+      { href: "/student-housing", name: "Student housing", icon: "M22 10 12 5 2 10l10 5 10-5ZM6 12v5c0 1 2.7 2 6 2s6-1 6-2v-5" },
+    ],
+  },
+  {
     label: "Live permit cities",
     items: CITIES.filter((c) => c.socrata).map((c) => ({
       href: `/development/city/${c.id}`,

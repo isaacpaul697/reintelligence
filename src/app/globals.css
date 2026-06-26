@@ -177,25 +177,59 @@ a, button { transition: color .15s ease, background-color .15s ease, border-colo
   0%, 100% { opacity: .25; }
   50%      { opacity: 1; }
 }
-@keyframes cc-draw  { to { stroke-dashoffset: 0; } }
-@keyframes cc-crane { 0%,100% { transform: rotate(-2.2deg); } 50% { transform: rotate(2.2deg); } }
-@keyframes cc-hook  { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
-@keyframes cc-pop   { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.35); } 100% { transform: scale(1); opacity: 1; } }
+/* hoist: rope scales from its top while the block rides down/up in sync */
+@keyframes cc-rope  { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(2.2); } }
+@keyframes cc-block { 0%,100% { transform: translateY(0); } 50% { transform: translateY(48px); } }
+/* cars sweep across the road; carry their road baseline (y=300.5) in the keyframe */
+@keyframes cc-drive { from { transform: translate(-50px, 300.5px); } to { transform: translate(470px, 300.5px); } }
+/* a plane drifts across the sky behind the tallest tower and the crane; it
+   enters and exits at the panel edges (clipped by the SVG viewport) so the
+   loop reset happens off-frame, so no fade; always fully opaque while visible */
+@keyframes cc-fly { from { transform: translate(-58px, 98px); } to { transform: translate(468px, 76px); } }
 
 .cc-hero-build  { transform-origin: 50% 100%; animation: cc-build 1.1s cubic-bezier(.22,.8,.3,1) both; }
 .cc-hero-lite   { animation: cc-lite 3.2s ease-in-out infinite; }
-.cc-hero-trend  { stroke-dasharray: 160; stroke-dashoffset: 160; animation: cc-draw 1.4s ease .9s both; }
-.cc-hero-crane  { transform-origin: 50% 0; animation: cc-crane 4.5s ease-in-out 1.4s infinite; }
-.cc-hero-hook   { animation: cc-hook 4.5s ease-in-out 1.4s infinite; }
-.cc-hero-node   { transform-origin: center; animation: cc-pop .5s cubic-bezier(.3,1.4,.5,1) 2.2s both; }
+.cc-hero-rope   { transform-box: fill-box; transform-origin: center top; animation: cc-rope 4.5s ease-in-out 1.4s infinite; }
+.cc-hero-block  { animation: cc-block 4.5s ease-in-out 1.4s infinite; }
+.cc-hero-car    { animation-name: cc-drive; animation-timing-function: linear; animation-iteration-count: infinite; }
+.cc-hero-plane  { animation: cc-fly 13s linear infinite; }
+
+/* ---- Student-housing hero: graduation cap ---- */
+@keyframes cc-tassel { 0% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
+@keyframes cc-spark  { 0%,100% { opacity: .1; transform: scale(.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(45deg); } }
+/* the cap rides up/down while tilting, so it feels like it is being tossed */
+@keyframes cc-float  { 0%,100% { transform: translateY(4px) rotate(-2.5deg); } 50% { transform: translateY(-14px) rotate(2.5deg); } }
+/* whole graphic breathes in scale, giving the float more presence */
+@keyframes cc-sway   { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.cc-campus-tassel { transform-box: fill-box; transform-origin: center top; animation: cc-tassel 2.2s ease-in-out infinite; }
+.cc-campus-spark  { transform-box: fill-box; transform-origin: center; animation: cc-spark 2s ease-in-out infinite; }
+.cc-campus-float  { transform-box: fill-box; transform-origin: center; animation: cc-float 3.6s ease-in-out infinite; }
+.cc-campus-sway   { transform-box: view-box; transform-origin: center; animation: cc-sway 6s ease-in-out infinite; }
+
+/* ---- Development hero: a construction site that keeps building ---- */
+@keyframes cc-construct {
+  0%   { transform: scaleY(0); }
+  30%  { transform: scaleY(1); }
+  90%  { transform: scaleY(1); }
+  100% { transform: scaleY(0); }
+}
+.cc-dev-build { transform-box: fill-box; transform-origin: 50% 100%; animation: cc-construct 6s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .cc-hero-build, .cc-hero-lite, .cc-hero-trend, .cc-hero-crane, .cc-hero-hook, .cc-hero-node {
+  .cc-hero-build, .cc-hero-lite, .cc-hero-rope, .cc-hero-block, .cc-hero-car,
+  .cc-campus-tassel, .cc-campus-spark, .cc-campus-float, .cc-campus-sway, .cc-dev-build {
     animation: none !important;
     transform: none !important;
-    stroke-dashoffset: 0 !important;
     opacity: 1 !important;
   }
+  /* park the plane mid-sky inside the panel instead of off-screen */
+  .cc-hero-plane { animation: none !important; transform: translate(180px, 88px) !important; }
+  /* park the cars spread along the road instead of piling at the origin */
+  .cc-hero-cars .cc-hero-car:nth-child(1) { transform: translate(60px, 300.5px) !important; }
+  .cc-hero-cars .cc-hero-car:nth-child(2) { transform: translate(150px, 300.5px) !important; }
+  .cc-hero-cars .cc-hero-car:nth-child(3) { transform: translate(250px, 300.5px) !important; }
+  .cc-hero-cars .cc-hero-car:nth-child(4) { transform: translate(330px, 300.5px) !important; }
+  .cc-hero-cars .cc-hero-car:nth-child(5) { transform: translate(400px, 300.5px) !important; }
 }
 
 @media print {

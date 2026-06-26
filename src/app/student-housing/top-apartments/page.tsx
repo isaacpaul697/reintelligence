@@ -14,7 +14,7 @@ const fmtMoney = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
 
 type NationalApt = Apartment & { marketId: string; marketName: string; marketState: string };
 
-const NAT_CACHE_KEY = "cc.cache.top-apartments.v4"; // v4: footprint-area unit model
+const NAT_CACHE_KEY = "cc.cache.top-apartments.v5"; // v5: one building per campus (geographic diversity)
 const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
 
 function useNationalTopApartments() {
@@ -332,7 +332,7 @@ function NationalTable({ apts, onSelect, isSaved }: {
         </table>
       </div>
       <div className="px-5 py-3 border-t border-line text-[11px] text-muted">
-        Unit counts estimated from OSM building data. Revenue = units × regional avg rent × 12. Cached daily.
+        One building per campus shown, so the ranking spans markets rather than clustering in a single high-rent metro. Beds estimated from OSM building data; revenue = estimated beds × real per-bed rent (HUD FMR / Census, regional fallback) × 12. Cached daily.
       </div>
     </Card>
   );

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"; // too slow for build-time pre-render
 const BATCH = 10;
 const TTL = 12 * 60 * 60 * 1000; // 12 hours
 // Bump when the Apartment shape changes so stale cached objects are discarded.
-const CACHE_VERSION = 4;
+const CACHE_VERSION = 5;
 
 type TaggedApt = Awaited<ReturnType<typeof fetchApartments>>[number] & {
   marketId: string;
@@ -47,7 +47,19 @@ async function buildNational(): Promise<TaggedApt[]> {
     });
   }
   all.sort((a, b) => b.estAnnualRevenue - a.estAnnualRevenue);
-  return all.slice(0, 50);
+  // Diversify by campus: a single high-rent, high-rise metro (e.g. Honolulu)
+  // would otherwise sweep every slot, since revenue = beds × per-bed rent × 12
+  // and that one market maxes out both factors. Cap each campus to its single
+  // top building so the national leaderboard is a real geographic spread.
+  const perMarket = new Map<string, number>();
+  const diversified: TaggedApt[] = [];
+  for (const apt of all) {
+    const n = perMarket.get(apt.marketId) ?? 0;
+    if (n >= 1) continue;
+    perMarket.set(apt.marketId, n + 1);
+    diversified.push(apt);
+  }
+  return diversified.slice(0, 50);
 }
 
 export async function GET() {

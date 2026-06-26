@@ -1,28 +1,16 @@
 import Link from "next/link";
-import { fetchBps } from "@/lib/dev/live/bps";
+import { fetchBps, STATE_NAME } from "@/lib/dev/live/bps";
 import { fetchFred } from "@/lib/dev/live/fred";
 import { CITIES } from "@/lib/dev/cities";
 import type { CityConfig } from "@/lib/dev/types";
+import { StatePermitLeaderboard } from "@/components/dev/MarketLeaderboard";
 import { NationalMap } from "@/components/dev/NationalMap";
-import { TrendBars } from "@/components/dev/charts";
+import { DevConstructionHero } from "@/components/dev/DevConstructionHero";
+import { CompositionTrend } from "@/components/dev/charts";
 import { Card, SectionTitle, Stat, StateBlock } from "@/components/dev/ui";
 import { fmtNum, fmtCompactUSD } from "@/lib/dev/format";
 
 export const revalidate = 43200;
-
-const STATE_NAME: Record<string, string> = {
-  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California",
-  CO: "Colorado", CT: "Connecticut", DE: "Delaware", DC: "Washington, D.C.",
-  FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois",
-  IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana",
-  ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota",
-  MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada",
-  NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York",
-  NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma", OR: "Oregon",
-  PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota",
-  TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont", VA: "Virginia",
-  WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming",
-};
 
 export default async function HomePage() {
   const [bps, fred] = await Promise.all([fetchBps(), fetchFred()]);
@@ -47,16 +35,21 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section>
-        <p className="text-xs uppercase tracking-[0.18em] text-gold-deep font-semibold mb-2">National overview</p>
-        <h1 className="font-display text-[34px] md:text-[40px] font-semibold text-ink leading-[1.05] tracking-tight max-w-3xl">
-          Where America is building, and where it isn&apos;t.
-        </h1>
-        <p className="text-[15px] text-ink-soft mt-3 max-w-2xl">
-          New-construction permit activity by state and structure type, straight from the U.S. Census
-          Building Permits Survey. Search any supported city to explore individual developments, modeled
-          economics, supply-gap recommendations, and the developers behind them.
-        </p>
+      <section className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)] lg:gap-10 lg:items-center">
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-gold-deep font-semibold mb-2">National overview</p>
+          <h1 className="font-display text-[34px] md:text-[40px] font-semibold text-ink leading-[1.05] tracking-tight">
+            Where America is building, and where it isn&apos;t.
+          </h1>
+          <p className="text-[15px] text-ink-soft mt-3 max-w-2xl">
+            New-construction permit activity by state and structure type, straight from the U.S. Census
+            Building Permits Survey. Search any supported city to explore individual developments, modeled
+            economics, supply-gap recommendations, and the developers behind them.
+          </p>
+        </div>
+        <div className="hidden lg:block">
+          <DevConstructionHero />
+        </div>
       </section>
 
       {bps ? (
@@ -70,15 +63,25 @@ export default async function HomePage() {
 
           <section className="grid lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
-              <SectionTitle sub={`Census Building Permits Survey · annual state totals, ${bps.year}`}>
-                Permit activity by state
-              </SectionTitle>
-              <NationalMap states={bps.states} />
+              <Card>
+                <SectionTitle sub={`Census Building Permits Survey · annual state totals, ${bps.year} · shade = units authorized, click a state to open its map`}>
+                  Permit activity by state
+                </SectionTitle>
+                <NationalMap states={bps.states} />
+              </Card>
             </div>
             <div className="flex flex-col gap-4">
               <Card>
-                <SectionTitle sub="National units authorized per year">Construction trend</SectionTitle>
-                <TrendBars data={bps.trend.map((t) => ({ label: `'${String(t.year).slice(2)}`, value: t.totalUnits }))} />
+                <SectionTitle sub="Units authorized per year, split by structure type, with year-over-year change">Construction trend &amp; mix</SectionTitle>
+                <CompositionTrend
+                  data={bps.trend.map((t) => ({
+                    label: `'${String(t.year).slice(2)}`,
+                    sf: t.units1,
+                    mid: Math.max(0, t.totalUnits - t.units1 - t.units5),
+                    mf: t.units5,
+                    value: t.valueThousands * 1000,
+                  }))}
+                />
               </Card>
               <Card className="flex flex-col gap-3">
                 <div className="text-xs text-muted">Market context (FRED)</div>
@@ -97,6 +100,13 @@ export default async function HomePage() {
               </Card>
             </div>
           </section>
+
+          <Card>
+            <SectionTitle sub={`${bps.year} · top states ranked by total units · bar length = volume, color split = structure mix · click a state to open its map`}>
+              State rankings
+            </SectionTitle>
+            <StatePermitLeaderboard states={bps.states} />
+          </Card>
 
           <section>
             <SectionTitle sub="Live-permit portals show real valuations and developers. Every other city is mapped from OpenStreetMap footprints with modeled economics. Search any U.S. city above.">

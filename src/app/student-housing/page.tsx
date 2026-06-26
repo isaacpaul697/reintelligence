@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useScoredMarkets } from "@/lib/compute";
 import { CampusMap } from "@/components/CampusMap";
+import { CampusHero } from "@/components/CampusHero";
 import { Card, Stat, LabelChip, SectionTitle, Logo, Spinner, StateBlock } from "@/components/ui";
 import { fmtNum } from "@/lib/scoring";
 import { timeAgo } from "@/lib/live/useMarketDetail";
@@ -77,6 +78,8 @@ export default function Home() {
           style={{ background: "radial-gradient(900px 360px at 88% -10%, var(--gold-soft) 0%, transparent 60%)" }}
         />
         <div className="relative p-8 md:p-12">
+          <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-10 lg:items-center">
+            <div>
           <div className="flex flex-wrap items-center gap-2 mb-5">
             <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-deep bg-gold-soft rounded-full px-3 py-1">
               <span className="relative flex w-2 h-2">
@@ -126,6 +129,9 @@ export default function Home() {
                 </span>
               ))}
             </div>
+          </div>
+            </div>
+            <div className="hidden lg:block self-center"><CampusHero /></div>
           </div>
         </div>
       </Card>

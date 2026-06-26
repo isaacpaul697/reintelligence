@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
+import { AppBackground } from "@/components/AppBackground";
 import { LiveDataProvider } from "@/lib/live/provider";
 import { AllApartmentsProvider } from "@/lib/live/allApartments";
 import { WatchlistProvider } from "@/lib/watchlist";
@@ -12,6 +13,7 @@ export default function StudentHousingLayout({ children }: Readonly<{ children: 
         <WatchlistProvider>
           <NotesProvider>
             <div className="flex min-h-screen">
+              <AppBackground />
               <Sidebar section="housing" />
               <div className="flex-1 min-w-0 flex flex-col">
                 <Topbar section="housing" />
