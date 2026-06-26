@@ -1052,3 +1052,18 @@ export function getCity(id: string): CityConfig | undefined {
 export function flagshipCity(state: string): CityConfig | undefined {
   return CITIES.find((c) => c.state === state);
 }
+
+/**
+ * The top `n` tracked cities for a state. CITIES is ordered live-portal-first
+ * then by population, so the first matches for a state are its largest cities,
+ * with any live-data city surfaced ahead of modeled ones. Used to drop the
+ * biggest-city markers onto the national map.
+ */
+export function flagshipCities(state: string, n = 3): CityConfig[] {
+  const out: CityConfig[] = [];
+  for (const c of CITIES) {
+    if (c.state === state) out.push(c);
+    if (out.length >= n) break;
+  }
+  return out;
+}

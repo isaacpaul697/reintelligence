@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoMark } from "./LogoMark";
 import { IntegrationsPanel } from "./IntegrationsPanel";
+import { useMobileNav } from "./MobileNav";
 import { CITIES } from "@/lib/dev/cities";
 
 const PIN = "M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Zm0-9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z";
@@ -88,16 +89,18 @@ const SWITCH = [
   { section: "development" as const, href: "/development", label: "Development" },
 ];
 
-export function Sidebar({ section }: { section: Section }) {
+/** Logo + section switcher + nav links + integrations. Shared by the desktop
+ *  rail and the mobile drawer. */
+function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?: () => void }) {
   const path = usePathname();
   const groups = section === "housing" ? HOUSING_GROUPS : DEV_GROUPS;
   const subtitle = section === "housing" ? "Student Housing Acquisitions IQ" : "Development Intelligence";
   const isActive = (it: Item) => path === it.href || (!it.exact && path.startsWith(it.href + "/"));
 
   return (
-    <aside className="no-print w-[248px] shrink-0 sticky top-0 h-screen flex flex-col bg-surface border-r border-line">
+    <>
       <div className="px-5 pt-6 pb-4">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" onClick={onNavigate} className="flex items-center gap-3">
           <LogoMark size={40} />
           <div>
             <div className="font-display text-[16px] font-semibold text-ink leading-none tracking-tight">Real Estate Intelligence</div>
@@ -111,7 +114,7 @@ export function Sidebar({ section }: { section: Section }) {
           {SWITCH.map((s) => {
             const active = s.section === section;
             return (
-              <Link key={s.section} href={s.href}
+              <Link key={s.section} href={s.href} onClick={onNavigate}
                 className={`text-center text-[12px] font-semibold py-1.5 rounded-[7px] transition-colors ${
                   active ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
                 }`}>
@@ -131,7 +134,7 @@ export function Sidebar({ section }: { section: Section }) {
             {g.items.map((it) => {
               const active = isActive(it);
               return (
-                <Link key={it.href} href={it.href}
+                <Link key={it.href} href={it.href} onClick={onNavigate}
                   className={`relative flex items-center gap-3 px-3 py-2 mb-0.5 rounded-[10px] text-[13.5px] transition-colors ${
                     active
                       ? "bg-gold-soft text-ink font-semibold"
@@ -158,6 +161,34 @@ export function Sidebar({ section }: { section: Section }) {
           <IntegrationsPanel />
         </div>
       )}
-    </aside>
+    </>
+  );
+}
+
+export function Sidebar({ section }: { section: Section }) {
+  const { open, setOpen } = useMobileNav();
+
+  return (
+    <>
+      {/* Desktop rail */}
+      <aside className="no-print hidden lg:flex w-[248px] shrink-0 sticky top-0 h-screen flex-col bg-surface border-r border-line">
+        <SidebarContent section={section} />
+      </aside>
+
+      {/* Mobile drawer + backdrop */}
+      <div className={`no-print lg:hidden ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
+        <div
+          onClick={() => setOpen(false)}
+          className={`fixed inset-0 z-[1100] bg-black/40 transition-opacity duration-200 ${open ? "opacity-100" : "opacity-0"}`}
+        />
+        <aside
+          className={`fixed top-0 left-0 z-[1110] w-[280px] max-w-[85vw] h-full flex flex-col bg-surface border-r border-line shadow-[var(--shadow-lg)] transition-transform duration-200 ${
+            open ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <SidebarContent section={section} onNavigate={() => setOpen(false)} />
+        </aside>
+      </div>
+    </>
   );
 }

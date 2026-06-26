@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { AppBackground } from "@/components/AppBackground";
+import { MobileNavProvider } from "@/components/MobileNav";
 import { LiveDataProvider } from "@/lib/live/provider";
 import { AllApartmentsProvider } from "@/lib/live/allApartments";
 import { WatchlistProvider } from "@/lib/watchlist";
@@ -12,14 +13,16 @@ export default function StudentHousingLayout({ children }: Readonly<{ children: 
       <AllApartmentsProvider>
         <WatchlistProvider>
           <NotesProvider>
-            <div className="flex min-h-screen">
-              <AppBackground />
-              <Sidebar section="housing" />
-              <div className="flex-1 min-w-0 flex flex-col">
-                <Topbar section="housing" />
-                <main className="flex-1 p-6 md:p-8 max-w-[1280px] w-full mx-auto">{children}</main>
+            <MobileNavProvider>
+              <div className="flex min-h-screen">
+                <AppBackground />
+                <Sidebar section="housing" />
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <Topbar section="housing" />
+                  <main className="flex-1 px-4 py-5 sm:p-6 md:p-8 max-w-[1280px] w-full mx-auto">{children}</main>
+                </div>
               </div>
-            </div>
+            </MobileNavProvider>
           </NotesProvider>
         </WatchlistProvider>
       </AllApartmentsProvider>

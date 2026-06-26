@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSettings } from "@/lib/settings";
 import { useLiveMarkets } from "@/lib/live/provider";
+import { useMobileNav } from "./MobileNav";
 import { CITIES } from "@/lib/dev/cities";
 
 type Section = "housing" | "development";
@@ -35,19 +36,26 @@ const DEV_CRUMBS: Record<string, string> = {
 export function Topbar({ section }: { section: Section }) {
   const path = usePathname();
   const { dark, toggleDark } = useSettings();
+  const { setOpen } = useMobileNav();
   const segs = path.split("/").filter(Boolean);
   const sub = segs[1] ?? "";
   const sectionLabel = section === "housing" ? "Student Housing" : "Development";
   const crumb = (section === "housing" ? HOUSING_CRUMBS : DEV_CRUMBS)[sub] ?? sectionLabel;
 
   return (
-    <header className="no-print sticky top-0 z-20 h-[60px] flex items-center justify-between px-6 md:px-8 border-b border-line backdrop-blur-md"
+    <header className="no-print sticky top-0 z-20 h-[60px] flex items-center justify-between px-4 sm:px-6 md:px-8 border-b border-line backdrop-blur-md"
       style={{ background: "color-mix(in srgb, var(--surface) 82%, transparent)" }}>
       <div className="flex items-center gap-2 text-sm min-w-0">
-        <span className="text-muted hidden sm:inline">Real Estate Intelligence</span>
+        <button onClick={() => setOpen(true)} aria-label="Open menu"
+          className="lg:hidden grid place-items-center w-9 h-9 -ml-1 rounded-[10px] text-ink-soft hover:bg-surface-2 shrink-0">
+          <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+        <span className="text-muted hidden md:inline">Real Estate Intelligence</span>
+        <span className="text-muted-2 hidden md:inline">/</span>
+        <span className="text-muted hidden sm:inline">{sectionLabel}</span>
         <span className="text-muted-2 hidden sm:inline">/</span>
-        <span className="text-muted">{sectionLabel}</span>
-        <span className="text-muted-2">/</span>
         <span className="text-ink font-medium truncate">{crumb}</span>
       </div>
       <div className="flex items-center gap-3">

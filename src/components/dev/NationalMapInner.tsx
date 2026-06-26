@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip } from "react-leaflet";
 import type { Layer, PathOptions, LeafletMouseEvent } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -9,7 +9,7 @@ import "leaflet/dist/leaflet.css";
 type GeoFeature = { id?: string | number };
 import type { BpsStateRow } from "@/lib/dev/types";
 import { FIPS_TO_POSTAL, STATE_NAME } from "@/lib/dev/live/bps";
-import { flagshipCity } from "@/lib/dev/cities";
+import { flagshipCity, flagshipCities } from "@/lib/dev/cities";
 import { fmtNum } from "@/lib/dev/format";
 import statesGeoRaw from "@/lib/dev/us-states.geo.json";
 
@@ -44,6 +44,16 @@ export default function NationalMapInner({
   const [active, setActive] = useState<BpsStateRow | null>(null);
 
   const byState = useMemo(() => new Map(states.map((s) => [s.state, s])), [states]);
+
+  // The three biggest tracked cities in every state with permit data, dropped
+  // on the map as clickable red dots that open that city's development page.
+  const cityDots = useMemo(
+    () =>
+      states.flatMap((s) =>
+        flagshipCities(s.state, 3).map((c, i) => ({ ...c, rank: i + 1 })),
+      ),
+    [states],
+  );
 
   // Quantile breakpoints so the skewed permit distribution spreads across the
   // ramp instead of a handful of dark states and a sea of pale ones.
@@ -120,6 +130,34 @@ export default function NationalMapInner({
           url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}{r}.png"
         />
         <GeoJSON data={statesGeo} style={(f) => styleFor(f as GeoFeature)} onEachFeature={(f, l) => onEach(f as GeoFeature, l)} />
+
+        {/* Biggest-city markers: click a dot to open that city's development data. */}
+        {cityDots.map((c) => (
+          <CircleMarker
+            key={c.id}
+            center={[c.lat, c.lng]}
+            radius={c.rank === 1 ? 4.5 : 3.5}
+            pathOptions={{
+              color: "#fffefb",
+              weight: 1.5,
+              fillColor: "#d1402e",
+              fillOpacity: 0.95,
+            }}
+            eventHandlers={{
+              click: () => {
+                window.location.href = `/development/city/${c.id}`;
+              },
+              mouseover: (e) => e.target.setRadius(c.rank === 1 ? 6.5 : 5.5),
+              mouseout: (e) => e.target.setRadius(c.rank === 1 ? 4.5 : 3.5),
+            }}
+          >
+            <Tooltip direction="top" offset={[0, -4]} opacity={1}>
+              <span style={{ fontWeight: 600 }}>{c.name}</span>, {c.state}
+              <br />
+              <span style={{ fontSize: "10px", color: "#6d5418" }}>Click for city data →</span>
+            </Tooltip>
+          </CircleMarker>
+        ))}
       </MapContainer>
 
       {/* Live breakdown panel — updates on hover, defaults to the national leader. */}
@@ -181,7 +219,10 @@ export default function NationalMapInner({
         <div className="flex justify-between text-[9px] num text-muted-2 mt-0.5">
           <span>fewer</span><span>more</span>
         </div>
-        <div className="text-[10px] text-muted mt-1">Hover a state · click to open its map</div>
+        <div className="text-[10px] text-muted mt-1 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full inline-block" style={{ background: "#d1402e", boxShadow: "0 0 0 1.5px #fffefb" }} />
+          Top 3 cities per state · click a dot for city data
+        </div>
       </div>
     </div>
   );
