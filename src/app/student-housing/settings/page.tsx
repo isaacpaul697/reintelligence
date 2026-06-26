@@ -3,6 +3,7 @@
 import { useSettings } from "@/lib/settings";
 import { FACTOR_META } from "@/lib/scoring";
 import { Card, SectionTitle } from "@/components/ui";
+import { ApiUsagePanel } from "@/components/ApiUsagePanel";
 
 export default function SettingsPage() {
   const { weights, setWeight, resetWeights, dark, toggleDark } = useSettings();
@@ -32,27 +33,7 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      <Card className="mb-6">
-        <SectionTitle sub="All data is fetched live from public APIs">Data sources</SectionTitle>
-        <div className="text-sm text-ink-soft space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">College Scorecard</strong>: enrollment, acceptance rate, growth</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">Google News RSS</strong>: demand signal headlines</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">OpenStreetMap</strong>: apartment buildings near campus</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">Wikipedia</strong>: university logos and seals</span>
-          </div>
-        </div>
-      </Card>
+      <ApiUsagePanel />
 
       <Card>
         <SectionTitle>Appearance</SectionTitle>

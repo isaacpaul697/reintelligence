@@ -87,6 +87,10 @@ export default function NationalMapInner({
       },
       mouseout: (e: LeafletMouseEvent) => {
         e.target.setStyle(styleFor(f));
+        // Clear the panel only if this row is still the active one, so moving
+        // onto an adjacent state (which fires mouseout here, then mouseover
+        // there) doesn't wipe out the newly hovered state.
+        if (row) setActive((cur) => (cur?.state === row.state ? null : cur));
       },
       click: () => {
         const postal = FIPS_TO_POSTAL[String(f.id)];

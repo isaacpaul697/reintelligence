@@ -1,5 +1,6 @@
 import { SCORECARD_IDS } from "../universities";
 import { DAY } from "./http";
+import { recordRateLimit } from "../usage";
 
 export interface ScorecardRow {
   enrollment: number | null;
@@ -39,6 +40,7 @@ export async function fetchScorecard(): Promise<Map<number, ScorecardRow>> {
   const out = new Map<number, ScorecardRow>();
   try {
     const res = await fetch(url, { next: { revalidate: DAY } });
+    recordRateLimit("scorecard", res.headers); // capture the live api.data.gov quota meter
     if (!res.ok) return out;
     const json = await res.json();
     for (const r of json.results ?? []) {
