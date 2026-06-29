@@ -41,6 +41,20 @@ export const SECTOR_PLAYERS: Record<string, SectorPlayersConfig> = {
       { name: "Terreno Realty", ticker: "TRNO", cik: 1476150, note: "Industrial in six major coastal markets.", site: "terreno.com" },
     ],
   },
+  "single-townhome": {
+    newsQuery:
+      'homebuilder (single-family OR townhome OR "for-sale housing") (housing starts OR construction OR community OR "land acquisition" OR earnings)',
+    playersIntro:
+      "The largest publicly-traded single-family and townhome builders. Recent activity is pulled live from each firm's SEC filings.",
+    companies: [
+      { name: "D.R. Horton", ticker: "DHI", cik: 882184, note: "Largest U.S. homebuilder by volume.", site: "drhorton.com" },
+      { name: "Lennar", ticker: "LEN", cik: 920760, note: "National builder of single-family homes and townhomes.", site: "lennar.com" },
+      { name: "PulteGroup", ticker: "PHM", cik: 822416, note: "Single-family and attached homes across major metros.", site: "pultegroup.com" },
+      { name: "NVR", ticker: "NVR", cik: 906163, note: "Ryan Homes parent; East Coast single-family builder.", site: "nvrinc.com" },
+      { name: "Toll Brothers", ticker: "TOL", cik: 794170, note: "Luxury single-family and townhome communities.", site: "tollbrothers.com" },
+      { name: "Meritage Homes", ticker: "MTH", cik: 833079, note: "Sun Belt single-family and entry-level homes.", site: "meritagehomes.com" },
+    ],
+  },
   multifamily: {
     newsQuery:
       'multifamily apartment (development OR construction OR acquisition OR "rent growth" OR "lease-up") -student',

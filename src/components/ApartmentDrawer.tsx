@@ -5,12 +5,21 @@ import type { Apartment } from "@/lib/types";
 import { useWatchlist, type SavedApartment } from "@/lib/watchlist";
 import { useConstructionNews } from "@/lib/live/useConstructionNews";
 import { timeAgo } from "@/lib/live/useMarketDetail";
+import UnderwritingPanel from "./UnderwritingPanel";
+import type { UwInputs } from "@/lib/underwriting";
+
+/** Live + modeled market context the underwriting model draws on. */
+export interface MarketContext {
+  mortgageRate: number | null;
+  estOccupancy: number | null;
+}
 
 interface ApartmentDrawerProps {
   apartment: Apartment | null;
   marketId: string;
   marketName: string;
   marketState: string;
+  marketContext?: MarketContext;
   onClose: () => void;
 }
 
@@ -60,6 +69,7 @@ export default function ApartmentDrawer({
   marketId,
   marketName,
   marketState,
+  marketContext,
   onClose,
 }: ApartmentDrawerProps) {
   const { isSaved, toggle } = useWatchlist();
@@ -174,6 +184,19 @@ export default function ApartmentDrawer({
                   </div>
                 </div>
               </div>
+
+              {/* Auto-underwriting */}
+              <UnderwritingPanel
+                inputs={{
+                  mode: "income",
+                  propertyType: "student-housing",
+                  grossAnnualRent: apartment.estAnnualRevenue,
+                  units: apartment.estUnits,
+                  beds: apartment.estBeds,
+                  mortgageRate: marketContext?.mortgageRate ?? null,
+                  occupancy: marketContext?.estOccupancy ?? null,
+                } satisfies UwInputs}
+              />
 
               {/* Quick links */}
               {(apartment.website || apartment.searchUrl) && (

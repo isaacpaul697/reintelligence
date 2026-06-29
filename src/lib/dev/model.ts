@@ -114,4 +114,9 @@ export const METHODOLOGY: { metric: string; provenance: "live" | "estimated"; fo
   { metric: "Supply-gap recommendation", provenance: "estimated", formula: "permit supply-share(type) vs blended demand-share(type) from ACS growth, vacancy, income & OSM land-use mix", source: "Permits + Census ACS + OSM Overpass" },
   { metric: "Mapped developments (cities w/o a portal)", provenance: "live", formula: "Tagged building footprints near the place center, classified to property type by OSM building/landuse tags", source: "OpenStreetMap Overpass (geometry + tags)" },
   { metric: "Floor area (OSM buildings)", provenance: "estimated", formula: "footprint polygon area (from live geometry) × building:levels (or typical-by-type when untagged)", source: "OSM geometry + modeled level assumption" },
+  { metric: "Underwriting cap rate", provenance: "estimated", formula: "live 30-yr mortgage rate + asset-class risk spread, clamped 4–11%", source: "FRED MORTGAGE30US + modeled spread" },
+  { metric: "Net operating income", provenance: "estimated", formula: "gross rent × (1 − vacancy) × (1 − expense ratio); expense ratio & vacancy modeled by type", source: "Live/modeled rent + modeled operating assumptions" },
+  { metric: "Stabilized rent (development underwriting)", provenance: "estimated", formula: "units × modeled $/unit/mo × 12, or floor area × modeled $/sqft/yr when unit count is absent", source: "Permit units / floor area + modeled rents" },
+  { metric: "Estimated value (income approach)", provenance: "estimated", formula: "net operating income / cap rate", source: "Modeled NOI + cap-rate anchor" },
+  { metric: "Financing (debt service, DSCR, cash-on-cash)", provenance: "estimated", formula: "30-yr amortizing payment on (price × LTV) at the live mortgage rate; DSCR = NOI / debt service", source: "FRED MORTGAGE30US (rate, live) + modeled LTV" },
 ];

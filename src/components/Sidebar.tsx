@@ -49,23 +49,10 @@ const HOUSING_GROUPS: Group[] = [
 
 const DEV_GROUPS: Group[] = [
   {
-    label: "Overview",
+    label: "Tools",
     items: [
-      { href: "/development", name: "National Overview", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10", exact: true },
+      { href: "/development", name: "National Overview & Map", icon: "M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Zm6 0v12m6-9v12", exact: true },
       { href: "/development/area", name: "Area Search", icon: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.3-4.3" },
-    ],
-  },
-  {
-    label: "Asset classes",
-    items: [
-      { href: "/development/sector/multifamily", name: "Multifamily", icon: "M3 21h18M6 21V4h6v17M12 21V9h6v12M9 8h0M9 12h0M9 16h0M15 12h0M15 16h0" },
-      { href: "/development/sector/single-family", name: "Single-family", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10" },
-      { href: "/development/sector/townhome", name: "Townhome & 2–4", icon: "M2 21V11l4-3 4 3v10M11 21V8l5-3 5 3v13M14 21v-5h3v5" },
-      { href: "/development/sector/industrial", name: "Industrial", icon: "M3 21V11l5 3V11l5 3V8l8 5v8H3ZM7 17h0M12 17h0M17 17h0" },
-      { href: "/development/sector/office", name: "Office", icon: "M5 21V4h9v17M14 10h5v11M8 8h0M8 12h0M8 16h0" },
-      { href: "/development/sector/retail", name: "Retail", icon: "M4 9l1-4h14l1 4M4 9v11h16V9M4 9h16M9 20v-6h6v6" },
-      { href: "/development/sector/affordable", name: "Affordable", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10M9 21v-5a3 3 0 0 1 6 0v5" },
-      { href: "/student-housing", name: "Student housing", icon: "M22 10 12 5 2 10l10 5 10-5ZM6 12v5c0 1 2.7 2 6 2s6-1 6-2v-5" },
     ],
   },
   {
@@ -84,9 +71,27 @@ const DEV_GROUPS: Group[] = [
   },
 ];
 
-const SWITCH = [
-  { section: "housing" as const, href: "/student-housing", label: "Student Housing" },
-  { section: "development" as const, href: "/development", label: "Development" },
+/** Top-level workspaces. Student housing is its own fully-live world; each
+ *  development asset class is its own specialized tab. */
+type Tab = { href: string; label: string; match: (p: string) => boolean };
+const HOUSING_TAB: Tab = {
+  href: "/student-housing",
+  label: "Student Housing",
+  match: (p) => p.startsWith("/student-housing"),
+};
+/** Development home: the national overview + permit map. */
+const DEV_HOME_TAB: Tab = {
+  href: "/development",
+  label: "Development",
+  match: (p) => p === "/development",
+};
+const SECTOR_TABS: Tab[] = [
+  { href: "/development/sector/multifamily", label: "Multifamily", match: (p) => p.startsWith("/development/sector/multifamily") },
+  { href: "/development/sector/single-townhome", label: "Single / Townhome", match: (p) => p.startsWith("/development/sector/single-townhome") },
+  { href: "/development/sector/industrial", label: "Industrial", match: (p) => p.startsWith("/development/sector/industrial") },
+  { href: "/development/sector/office", label: "Office", match: (p) => p.startsWith("/development/sector/office") },
+  { href: "/development/sector/retail", label: "Retail", match: (p) => p.startsWith("/development/sector/retail") },
+  { href: "/development/sector/affordable", label: "Affordable", match: (p) => p.startsWith("/development/sector/affordable") },
 ];
 
 /** Logo + section switcher + nav links + integrations. Shared by the desktop
@@ -96,6 +101,11 @@ function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?
   const groups = section === "housing" ? HOUSING_GROUPS : DEV_GROUPS;
   const subtitle = section === "housing" ? "Student Housing Acquisitions IQ" : "Development Intelligence";
   const isActive = (it: Item) => path === it.href || (!it.exact && path.startsWith(it.href + "/"));
+  const sectorActive = SECTOR_TABS.some((t) => t.match(path));
+  // The two top-level worlds. "Development" lands on the national overview/map;
+  // it stays highlighted everywhere in development except inside an asset class.
+  const housingActive = section === "housing";
+  const devHomeActive = section === "development" && !sectorActive;
 
   return (
     <>
@@ -110,18 +120,39 @@ function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?
       </div>
 
       <div className="px-3 pb-3">
-        <div className="grid grid-cols-2 gap-1 p-1 rounded-[10px] bg-surface-2 border border-line">
-          {SWITCH.map((s) => {
-            const active = s.section === section;
-            return (
-              <Link key={s.section} href={s.href} onClick={onNavigate}
-                className={`text-center text-[12px] font-semibold py-1.5 rounded-[7px] transition-colors ${
-                  active ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
-                }`}>
-                {s.label}
-              </Link>
-            );
-          })}
+        <div className="p-1 rounded-[10px] bg-surface-2 border border-line flex flex-col gap-1">
+          {/* The two top-level worlds */}
+          <div className="grid grid-cols-2 gap-1">
+            <Link href={HOUSING_TAB.href} onClick={onNavigate}
+              className={`text-center text-[12px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
+                housingActive ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
+              }`}>
+              {HOUSING_TAB.label}
+            </Link>
+            <Link href={DEV_HOME_TAB.href} onClick={onNavigate}
+              className={`text-center text-[12px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
+                devHomeActive ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
+              }`}>
+              {DEV_HOME_TAB.label}
+            </Link>
+          </div>
+          {/* Development asset classes, each its own specialized tab */}
+          <div className="text-[9.5px] uppercase tracking-[1.2px] font-semibold text-muted-2 px-1.5 pt-1">
+            Asset classes
+          </div>
+          <div className="grid grid-cols-2 gap-1">
+            {SECTOR_TABS.map((t) => {
+              const active = t.match(path);
+              return (
+                <Link key={t.href} href={t.href} onClick={onNavigate}
+                  className={`text-center text-[11.5px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
+                    active ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
+                  }`}>
+                  {t.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
 

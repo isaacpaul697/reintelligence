@@ -259,6 +259,7 @@ export default function MarketDetail() {
         marketId={id}
         marketName={m.shortName}
         marketState={m.state}
+        marketContext={{ mortgageRate: m.mortgageRate ?? null, estOccupancy: m.estOccupancy ?? null }}
         onClose={() => setDrawerApt(null)}
       />
     </div>

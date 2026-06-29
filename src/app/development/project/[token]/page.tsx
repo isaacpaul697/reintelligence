@@ -11,6 +11,7 @@ import { fetchLandUse } from "@/lib/dev/live/overpass";
 import { slugifyDeveloper } from "@/lib/dev/aggregate";
 import { DevMap } from "@/components/dev/DevMap";
 import { Card, SectionTitle, TypePill, ProvenanceTag, StateBlock } from "@/components/dev/ui";
+import UnderwritingPanel from "@/components/UnderwritingPanel";
 import type { Metric } from "@/lib/dev/types";
 import { fmtCompactUSD, fmtDate, fmtDuration, fmtNum } from "@/lib/dev/format";
 
@@ -25,6 +26,8 @@ interface Resolved {
   developerCity: string | null;
   /** OSM-backed records carry no permit issuance date (start year at best). */
   osm: boolean;
+  /** Live FRED 30-yr mortgage rate, percent. Anchors the underwriting. */
+  mortgageRate: number | null;
 }
 
 /** Resolve a development token to either a permit-portal record or an OSM element. */
@@ -43,6 +46,7 @@ async function resolve(id: string): Promise<Resolved | null> {
       backHref: `/development/city/${cityId}`,
       developerCity: cityId,
       osm: false,
+      mortgageRate: bundle.fred.mortgageRate,
     };
   }
 
@@ -61,6 +65,7 @@ async function resolve(id: string): Promise<Resolved | null> {
     backHref: registry ? `/development/city/${cityId}` : `/development/area?q=${encodeURIComponent(query)}`,
     developerCity: null,
     osm: true,
+    mortgageRate: fred.mortgageRate,
   };
 }
 
@@ -83,7 +88,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ to
     );
   }
 
-  const { view, cityName, cityState, backHref, developerCity, osm } = resolved;
+  const { view, cityName, cityState, backHref, developerCity, osm, mortgageRate } = resolved;
   const nearby = await fetchLandUse(view.lat, view.lng, 800);
   const place = cityState ? `${cityName}, ${cityState}` : cityName;
 
@@ -104,6 +109,24 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ to
         <MetricCard label="Development cost" metric={view.cost} format={fmtCompactUSD} />
         <MetricCard label="Land cost" metric={view.land} format={fmtCompactUSD} />
         <DurationCard metric={view.durationDays} />
+      </section>
+
+      <section>
+        <SectionTitle sub="Stabilized value, returns and financing modeled from this project's live cost, units and the live FRED rate">
+          Auto-underwriting
+        </SectionTitle>
+        <UnderwritingPanel
+          title="Development underwriting"
+          inputs={{
+            mode: "development",
+            propertyType: view.type,
+            grossAnnualRent: null,
+            units: view.units,
+            sqft: view.sqft,
+            totalCost: view.cost.value,
+            mortgageRate,
+          }}
+        />
       </section>
 
       <section className="grid lg:grid-cols-3 gap-4">

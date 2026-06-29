@@ -19,6 +19,7 @@ const METHOD = [
   { h: "4 · Map real apartments", b: "OpenStreetMap's Overpass API returns named apartment buildings within 3 km of each campus, with addresses, websites, and exact distances." },
   { h: "5 · Score 0–100", b: "A transparent weighted model across six factors (enrollment growth, selectivity, demand momentum, rent growth, occupancy, renter-base scale). Rent and occupancy are modeled from live inputs and labeled \"estimated.\"" },
   { h: "6 · Label & rank", b: "Markets are banded into Strong Buy / Watchlist / Needs Diligence / Overpriced, ranked on the map, leaderboard, and a print-ready IC scorecard." },
+  { h: "7 · Auto-underwrite any property", b: "Click a mapped apartment to size the deal: gross rent (estimated beds × live per-bed rent) flows to NOI through modeled vacancy and expense ratios, valued at a cap rate anchored to the live FRED mortgage rate plus an asset-class spread. Returns and financing (cap rate, cash-on-cash, DSCR) update as you adjust the assumptions; every modeled figure is labeled \"estimated.\"" },
 ];
 
 const SOURCES = [
@@ -104,7 +105,7 @@ export default function AboutPage() {
           <SectionTitle sub="Provenance model">Data transparency</SectionTitle>
           <ul className="text-sm text-ink-soft space-y-2 list-disc pl-4">
             <li><strong className="text-ink">Live</strong>: pulled directly from an external source (Scorecard, Census, BLS, FRED, Google News, OSM).</li>
-            <li><strong className="text-ink">Estimated</strong>: modeled from live inputs. Rent growth and occupancy are derived from enrollment growth and admissions selectivity.</li>
+            <li><strong className="text-ink">Estimated</strong>: modeled from live inputs. Rent growth and occupancy are derived from enrollment growth and admissions selectivity; underwriting (NOI, cap rate, valuation, returns) is modeled from live rents and the live mortgage rate.</li>
             <li>Every data point on every page carries a provenance tag so you always know what&apos;s real and what&apos;s modeled.</li>
           </ul>
         </Card>

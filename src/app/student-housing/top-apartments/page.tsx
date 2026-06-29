@@ -170,6 +170,10 @@ export default function TopApartmentsPage() {
         marketId={drawerMarket.id}
         marketName={drawerMarket.name}
         marketState={drawerMarket.state}
+        marketContext={(() => {
+          const fm = scored.find((s) => s.market.id === drawerMarket.id)?.market;
+          return { mortgageRate: fm?.mortgageRate ?? null, estOccupancy: fm?.estOccupancy ?? null };
+        })()}
         onClose={() => setDrawerApt(null)}
       />
     </div>

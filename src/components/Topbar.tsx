@@ -33,6 +33,16 @@ const DEV_CRUMBS: Record<string, string> = {
   methodology: "Methodology",
 };
 
+/** Asset-class slug → display label for the breadcrumb on sector pages. */
+const SECTOR_LABELS: Record<string, string> = {
+  multifamily: "Multifamily",
+  "single-townhome": "Single / Townhome",
+  industrial: "Industrial",
+  office: "Office",
+  retail: "Retail",
+  affordable: "Affordable",
+};
+
 export function Topbar({ section }: { section: Section }) {
   const path = usePathname();
   const { dark, toggleDark } = useSettings();
@@ -40,7 +50,11 @@ export function Topbar({ section }: { section: Section }) {
   const segs = path.split("/").filter(Boolean);
   const sub = segs[1] ?? "";
   const sectionLabel = section === "housing" ? "Student Housing" : "Development";
-  const crumb = (section === "housing" ? HOUSING_CRUMBS : DEV_CRUMBS)[sub] ?? sectionLabel;
+  // On a sector page (/development/sector/<slug>) show the asset class itself.
+  const crumb =
+    sub === "sector"
+      ? SECTOR_LABELS[segs[2] ?? ""] ?? "Asset class"
+      : (section === "housing" ? HOUSING_CRUMBS : DEV_CRUMBS)[sub] ?? sectionLabel;
 
   return (
     <header className="no-print sticky top-0 z-20 h-[60px] flex items-center justify-between px-4 sm:px-6 md:px-8 border-b border-line backdrop-blur-md"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Pane } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Pane } from "react-leaflet";
 import type { Layer, PathOptions, LeafletMouseEvent } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -42,6 +42,12 @@ export default function NationalMapInner({
   height?: number;
 }) {
   const [active, setActive] = useState<BpsStateRow | null>(null);
+  // Hover label for the red city dots. Rendered as an HTML sibling of the
+  // overlay panels (below) rather than a Leaflet Tooltip: the Leaflet tooltip
+  // pane lives inside the transformed .leaflet-map-pane (z-400 stacking
+  // context), so it can never paint above the z-[500] HTML overlays. An HTML
+  // label at z-[600] always wins.
+  const [dotHover, setDotHover] = useState<{ x: number; y: number; name: string; state: string } | null>(null);
 
   const byState = useMemo(() => new Map(states.map((s) => [s.state, s])), [states]);
 
@@ -151,19 +157,35 @@ export default function NationalMapInner({
                 click: () => {
                   window.location.href = `/development/city/${c.id}`;
                 },
-                mouseover: (e) => e.target.setRadius(c.rank === 1 ? 6.5 : 5.5),
-                mouseout: (e) => e.target.setRadius(c.rank === 1 ? 4.5 : 3.5),
+                mouseover: (e) => {
+                  e.target.setRadius(c.rank === 1 ? 6.5 : 5.5);
+                  const pt = e.target._map.latLngToContainerPoint([c.lat, c.lng]);
+                  setDotHover({ x: pt.x, y: pt.y, name: c.name, state: c.state });
+                },
+                mouseout: (e) => {
+                  e.target.setRadius(c.rank === 1 ? 4.5 : 3.5);
+                  setDotHover(null);
+                },
               }}
-            >
-              <Tooltip direction="top" offset={[0, -4]} opacity={1}>
-                <span style={{ fontWeight: 600 }}>{c.name}</span>, {c.state}
-                <br />
-                <span style={{ fontSize: "10px", color: "#6d5418" }}>Click for city data →</span>
-              </Tooltip>
-            </CircleMarker>
+            />
           ))}
         </Pane>
       </MapContainer>
+
+      {/* City-dot hover label. Sits in the HTML overlay layer at z-[600], above
+          the breakdown panel and legend (z-[500]), so it can never be tucked
+          behind them the way a Leaflet tooltip (trapped in the map pane) would. */}
+      {dotHover && (
+        <div
+          className="absolute z-[600] pointer-events-none -translate-x-1/2 -translate-y-full bg-surface/95 backdrop-blur border border-line rounded-[var(--radius-card)] shadow-[var(--shadow-lg)] px-2.5 py-1.5 whitespace-nowrap"
+          style={{ left: dotHover.x, top: dotHover.y - 8 }}
+        >
+          <div className="text-[12px] text-ink leading-tight">
+            <span className="font-semibold">{dotHover.name}</span>, {dotHover.state}
+          </div>
+          <div className="text-[10px] text-gold-deep font-semibold leading-tight">Click for city data →</div>
+        </div>
+      )}
 
       {/* Live breakdown panel — updates on hover, defaults to the national leader. */}
       {panel && (

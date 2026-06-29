@@ -180,6 +180,7 @@ export default function ApartmentsPage() {
         marketId={active ?? ""}
         marketName={market?.shortName ?? ""}
         marketState={market?.state ?? ""}
+        marketContext={{ mortgageRate: market?.mortgageRate ?? null, estOccupancy: market?.estOccupancy ?? null }}
         onClose={() => setDrawerApt(null)}
       />
     </div>
