@@ -136,23 +136,28 @@ function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?
               {DEV_HOME_TAB.label}
             </Link>
           </div>
-          {/* Development asset classes, each its own specialized tab */}
-          <div className="text-[9.5px] uppercase tracking-[1.2px] font-semibold text-muted-2 px-1.5 pt-1">
-            Asset classes
-          </div>
-          <div className="grid grid-cols-2 gap-1">
-            {SECTOR_TABS.map((t) => {
-              const active = t.match(path);
-              return (
-                <Link key={t.href} href={t.href} onClick={onNavigate}
-                  className={`text-center text-[11.5px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
-                    active ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
-                  }`}>
-                  {t.label}
-                </Link>
-              );
-            })}
-          </div>
+          {/* Development asset classes, each its own specialized tab. Only
+              relevant inside the development world, so hide them in housing. */}
+          {section === "development" && (
+            <>
+              <div className="text-[9.5px] uppercase tracking-[1.2px] font-semibold text-muted-2 px-1.5 pt-1">
+                Asset classes
+              </div>
+              <div className="grid grid-cols-2 gap-1">
+                {SECTOR_TABS.map((t) => {
+                  const active = t.match(path);
+                  return (
+                    <Link key={t.href} href={t.href} onClick={onNavigate}
+                      className={`text-center text-[11.5px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
+                        active ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
+                      }`}>
+                      {t.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
