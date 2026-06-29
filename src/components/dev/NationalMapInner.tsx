@@ -111,7 +111,7 @@ export default function NationalMapInner({
       click: () => {
         const postal = FIPS_TO_POSTAL[String(f.id)];
         const city = postal ? flagshipCity(postal) : undefined;
-        if (city) window.location.href = `/development/city/${city.id}`;
+        if (city) window.location.href = `/city/${city.id}`;
       },
     });
   };
@@ -155,7 +155,7 @@ export default function NationalMapInner({
               }}
               eventHandlers={{
                 click: () => {
-                  window.location.href = `/development/city/${c.id}`;
+                  window.location.href = `/city/${c.id}`;
                 },
                 mouseover: (e) => {
                   e.target.setRadius(c.rank === 1 ? 6.5 : 5.5);
@@ -228,7 +228,7 @@ export default function NationalMapInner({
           </div>
 
           {panelCity && (
-            <a href={`/development/city/${panelCity.id}`} className="block mt-2.5 text-[11px] font-semibold text-gold-deep">
+            <a href={`/city/${panelCity.id}`} className="block mt-2.5 text-[11px] font-semibold text-gold-deep">
               Open {panelCity.name} map →
             </a>
           )}

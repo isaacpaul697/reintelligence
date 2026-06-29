@@ -20,7 +20,7 @@ export default async function CityPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="flex flex-col gap-7">
       <section>
-        <Link href="/development" className="text-xs text-muted hover:text-ink">← National overview</Link>
+        <Link href="/national" className="text-xs text-muted hover:text-ink">← National overview</Link>
         <h1 className="font-display text-[32px] font-semibold text-ink leading-tight tracking-tight mt-1">
           {city.name}, {city.state}
         </h1>

@@ -62,7 +62,7 @@ const TYPE_TEXT_KEYS = [
   "permit_class_mapped", "permit_class", "permittypemapped", "permittypedesc",
   "permit_type_desc", "permit_type_definition", "permit_sub_type", "permit_type",
   "work_class", "use_desc", "proposed_use", "existing_use", "permit_group",
-  "review_type", "bldg_type", "job_type", "permittype", "topcat",
+  "review_type", "bldg_type", "job_type", "permittype", "topcat", "work_type", "filing_reason",
 ];
 const DESC_KEYS = ["description", "work_description", "job_description", "work_desc", "descr"];
 
@@ -125,7 +125,10 @@ export function classifyType(text: string, units: number | null): PropertyType {
 const QUERY: Record<string, { order: string; where?: string }> = {
   austin: { order: "issue_date DESC", where: "permittype='BP' AND work_class='New' AND latitude IS NOT NULL" },
   chicago: { order: "issue_date DESC", where: "permit_type='PERMIT - NEW CONSTRUCTION' AND latitude IS NOT NULL" },
-  nyc: { order: "issuance_date DESC", where: "permit_status='ISSUED' AND gis_latitude IS NOT NULL" },
+  // DOB NOW: Build (rbx6-tga4). Permit-level by trade; filter to construction
+  // trades with a real declared cost so the map shows actual building work, not
+  // sidewalk sheds or fences. estimated_job_costs is per-permit, declared live.
+  nyc: { order: "issued_date DESC", where: "permit_status='Permit Issued' AND latitude IS NOT NULL AND issued_date IS NOT NULL AND work_type in('General Construction','Foundation','Structural')" },
   seattle: { order: "issueddate DESC", where: "issueddate IS NOT NULL AND latitude IS NOT NULL" },
   sf: { order: "issued_date DESC", where: "issued_date IS NOT NULL" },
   la: { order: "issue_date DESC", where: "permit_group='Building' AND lat IS NOT NULL" },

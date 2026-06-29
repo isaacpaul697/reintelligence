@@ -6,8 +6,7 @@ import { useSettings } from "@/lib/settings";
 import { useLiveMarkets } from "@/lib/live/provider";
 import { useMobileNav } from "./MobileNav";
 import { CITIES } from "@/lib/dev/cities";
-
-type Section = "housing" | "development";
+import { SECTORS } from "@/lib/dev/sectorDefs";
 
 const HOUSING_CRUMBS: Record<string, string> = {
   "": "Home",
@@ -20,41 +19,44 @@ const HOUSING_CRUMBS: Record<string, string> = {
   scorecard: "Acquisition Scorecard",
   notes: "Diligence Notes",
   watchlist: "Saved Apartments",
-  about: "About / Methodology",
   settings: "Settings",
 };
 
-const DEV_CRUMBS: Record<string, string> = {
-  "": "National Overview",
-  city: "City",
-  area: "Area Search",
-  developer: "Developer",
-  project: "Development",
-  methodology: "Methodology",
+const SECTOR_SUB_CRUMBS: Record<string, string> = {
+  "": "Overview",
+  leaderboards: "Leaderboards",
+  players: "Players & news",
 };
 
-/** Asset-class slug → display label for the breadcrumb on sector pages. */
-const SECTOR_LABELS: Record<string, string> = {
-  multifamily: "Multifamily",
-  "single-townhome": "Single / Townhome",
-  industrial: "Industrial",
-  office: "Office",
-  retail: "Retail",
-  affordable: "Affordable",
-};
+/** Resolve the breadcrumb section + leaf from the pathname alone. */
+function crumbsFor(path: string): { section: string; leaf: string; housing: boolean } {
+  const segs = path.split("/").filter(Boolean);
 
-export function Topbar({ section }: { section: Section }) {
+  if (segs[0] === "student-housing") {
+    return { section: "Student Housing", leaf: HOUSING_CRUMBS[segs[1] ?? ""] ?? "Student Housing", housing: true };
+  }
+  if (segs[0] === "sector") {
+    const def = SECTORS[segs[1] ?? ""];
+    return {
+      section: def?.label ?? "Asset class",
+      leaf: SECTOR_SUB_CRUMBS[segs[2] ?? ""] ?? "Overview",
+      housing: false,
+    };
+  }
+  if (segs[0] === "area") return { section: "Area Search", leaf: "Area Search", housing: false };
+  if (segs[0] === "build") return { section: "Underwriting Lab", leaf: "Build a property", housing: false };
+  if (segs[0] === "about") return { section: "Reference", leaf: "About & methodology", housing: false };
+  if (segs[0] === "city") return { section: "National overview", leaf: "City", housing: false };
+  if (segs[0] === "project") return { section: "National overview", leaf: "Development", housing: false };
+  if (segs[0] === "developer") return { section: "National overview", leaf: "Developer", housing: false };
+  return { section: "National overview", leaf: "National Overview", housing: false };
+}
+
+export function Topbar() {
   const path = usePathname();
   const { dark, toggleDark } = useSettings();
   const { setOpen } = useMobileNav();
-  const segs = path.split("/").filter(Boolean);
-  const sub = segs[1] ?? "";
-  const sectionLabel = section === "housing" ? "Student Housing" : "Development";
-  // On a sector page (/development/sector/<slug>) show the asset class itself.
-  const crumb =
-    sub === "sector"
-      ? SECTOR_LABELS[segs[2] ?? ""] ?? "Asset class"
-      : (section === "housing" ? HOUSING_CRUMBS : DEV_CRUMBS)[sub] ?? sectionLabel;
+  const { section, leaf, housing } = crumbsFor(path);
 
   return (
     <header className="no-print sticky top-0 z-20 h-[60px] flex items-center justify-between px-4 sm:px-6 md:px-8 border-b border-line backdrop-blur-md"
@@ -68,12 +70,12 @@ export function Topbar({ section }: { section: Section }) {
         </button>
         <span className="text-muted hidden md:inline">Real Estate Intelligence</span>
         <span className="text-muted-2 hidden md:inline">/</span>
-        <span className="text-muted hidden sm:inline">{sectionLabel}</span>
+        <span className="text-muted hidden sm:inline">{section}</span>
         <span className="text-muted-2 hidden sm:inline">/</span>
-        <span className="text-ink font-medium truncate">{crumb}</span>
+        <span className="text-ink font-medium truncate">{leaf}</span>
       </div>
       <div className="flex items-center gap-3">
-        {section === "housing" ? <HousingStatus /> : <CitySearch />}
+        {housing ? <HousingStatus /> : <CitySearch />}
         <button onClick={toggleDark} aria-label="Toggle theme"
           className="grid place-items-center w-9 h-9 rounded-[10px] bg-surface-2 border border-line text-ink-soft hover:text-ink hover:border-line-strong">
           {dark ? (
@@ -117,9 +119,9 @@ function CitySearch() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const exact = CITIES.find((c) => c.name.toLowerCase() === q.trim().toLowerCase());
-    if (exact) router.push(`/development/city/${exact.id}`);
-    else if (matches[0]) router.push(`/development/city/${matches[0].id}`);
-    else if (q.trim()) router.push(`/development/area?q=${encodeURIComponent(q.trim())}`);
+    if (exact) router.push(`/city/${exact.id}`);
+    else if (matches[0]) router.push(`/city/${matches[0].id}`);
+    else if (q.trim()) router.push(`/area?q=${encodeURIComponent(q.trim())}`);
     setOpen(false);
   }
 
@@ -137,13 +139,13 @@ function CitySearch() {
         <div className="absolute top-full right-0 mt-1.5 w-full bg-surface border border-line rounded-[var(--radius-sm)] shadow-[var(--shadow-lg)] overflow-hidden z-30">
           {matches.slice(0, 6).map((c) => (
             <button key={c.id} type="button"
-              onMouseDown={() => router.push(`/development/city/${c.id}`)}
+              onMouseDown={() => router.push(`/city/${c.id}`)}
               className="block w-full text-left px-3.5 py-2 text-[13px] text-ink hover:bg-surface-2">
               {c.name}, {c.state}
             </button>
           ))}
           <button type="button"
-            onMouseDown={() => router.push(`/development/area?q=${encodeURIComponent(q.trim())}`)}
+            onMouseDown={() => router.push(`/area?q=${encodeURIComponent(q.trim())}`)}
             className="block w-full text-left px-3.5 py-2 text-[12px] text-muted hover:bg-surface-2 border-t border-line">
             Explore “{q.trim()}” as an area →
           </button>

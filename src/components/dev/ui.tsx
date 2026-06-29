@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Provenance, PropertyType } from "@/lib/dev/types";
 import { TYPE_COLOR, TYPE_LABEL } from "@/lib/dev/types";
+import { CountUp, type CountFormat } from "@/components/CountUp";
 
 export function Card({
   children,
@@ -76,11 +77,16 @@ export function Stat({
   value,
   sub,
   provenance,
+  to,
+  format,
 }: {
   label: string;
   value: string;
   sub?: string;
   provenance?: Provenance;
+  /** When provided, the figure counts up to `to` (rendered by the named `format`) on scroll-in. */
+  to?: number;
+  format?: CountFormat;
 }) {
   return (
     <Card className="flex flex-col gap-1">
@@ -88,7 +94,9 @@ export function Stat({
         {label}
         {provenance && <ProvenanceTag p={provenance} />}
       </span>
-      <span className="font-display text-[26px] font-semibold text-ink num leading-none">{value}</span>
+      <span className="font-display text-[26px] font-semibold text-ink num leading-none">
+        {to != null && format ? <CountUp to={to} format={format} /> : value}
+      </span>
       {sub && <span className="text-xs text-muted num">{sub}</span>}
     </Card>
   );

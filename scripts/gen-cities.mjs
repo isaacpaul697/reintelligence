@@ -13,7 +13,7 @@ const PER_STATE = 20;
 const SOCRATA = [
   { id: "austin", name: "Austin", state: "TX", lat: 30.2672, lng: -97.7431, zoom: 11, socrata: { domain: "data.austintexas.gov", dataset: "3syk-w9eu" } },
   { id: "chicago", name: "Chicago", state: "IL", lat: 41.8781, lng: -87.6298, zoom: 11, socrata: { domain: "data.cityofchicago.org", dataset: "ydr8-5enu" } },
-  { id: "nyc", name: "New York City", state: "NY", lat: 40.7128, lng: -74.006, zoom: 11, socrata: { domain: "data.cityofnewyork.us", dataset: "ipu4-2q9a" } },
+  { id: "nyc", name: "New York City", state: "NY", lat: 40.7128, lng: -74.006, zoom: 11, socrata: { domain: "data.cityofnewyork.us", dataset: "rbx6-tga4" } },
   { id: "seattle", name: "Seattle", state: "WA", lat: 47.6062, lng: -122.3321, zoom: 11, socrata: { domain: "data.seattle.gov", dataset: "76t5-zqzr" } },
   { id: "sf", name: "San Francisco", state: "CA", lat: 37.7749, lng: -122.4194, zoom: 12, socrata: { domain: "data.sfgov.org", dataset: "i98e-djp9" } },
   { id: "la", name: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437, zoom: 11, socrata: { domain: "data.lacity.org", dataset: "pi9x-tg5x" } },

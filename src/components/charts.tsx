@@ -23,10 +23,16 @@ export function scoreTone(score: number) {
 }
 
 export function ScoreRing({ score, size = 132, label }: { score: number; size?: number; label?: string }) {
-  const stroke = 11;
+  // Scale stroke + inner text to the ring size so small rings (e.g. 58px in the
+  // scorecard) don't overflow with the 132px-tuned defaults.
+  const stroke = Math.max(6, Math.round(size * 0.085));
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const tone = toneHex[scoreTone(score)];
+  const numSize = Math.round(size * 0.212); // 132px ring -> 28px, the original tuning
+  const labelSize = Math.max(9, Math.round(size * 0.076));
+  // Below ~66px there isn't room for both the number and a readable caption.
+  const showLabel = size >= 66;
   return (
     <div className="relative inline-grid place-items-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -43,9 +49,13 @@ export function ScoreRing({ score, size = 132, label }: { score: number; size?: 
           strokeDashoffset={c * (1 - score / 100)}
         />
       </svg>
-      <div className="absolute text-center">
-        <div className="text-[28px] font-bold text-ink num leading-none">{score}</div>
-        <div className="text-[10px] text-muted mt-1 uppercase tracking-wide">{label ?? "Score"}</div>
+      <div className="absolute text-center leading-none">
+        <div className="font-bold text-ink num leading-none" style={{ fontSize: numSize }}>{score}</div>
+        {showLabel && (
+          <div className="text-muted uppercase tracking-wide leading-none" style={{ fontSize: labelSize, marginTop: Math.round(size * 0.04) }}>
+            {label ?? "Score"}
+          </div>
+        )}
       </div>
     </div>
   );

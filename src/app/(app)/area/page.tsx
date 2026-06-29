@@ -5,20 +5,36 @@ import { CITIES } from "@/lib/dev/cities";
 import { CityView } from "@/components/dev/CityView";
 import { CityNews } from "@/components/dev/CityNews";
 import { fetchNews, developmentQuery } from "@/lib/live/news";
-import { StateBlock } from "@/components/dev/ui";
+import { StateBlock, Card } from "@/components/dev/ui";
+import { AreaSearchHero } from "@/components/dev/AreaSearchHero";
+import { AreaSearchForm } from "@/components/dev/AreaSearchForm";
 
 export const revalidate = 43200;
 
 export default async function AreaPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   if (!q) {
-    return <StateBlock title="Search for an area" note="Type a city or area in the search box to explore it." />;
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Card className="py-12 px-6 flex flex-col items-center text-center w-full max-w-[560px]">
+          <div className="w-full max-w-[420px]">
+            <AreaSearchHero />
+          </div>
+          <h1 className="font-display text-[24px] font-semibold text-ink mt-4">Search for an area</h1>
+          <p className="text-sm text-muted mt-2 max-w-md">
+            Type any U.S. city or area. We sweep OpenStreetMap building footprints to map its
+            developments, with modeled economics and live local news.
+          </p>
+          <AreaSearchForm />
+        </Card>
+      </div>
+    );
   }
 
   // If the query is one of our full-portal cities, send them to the rich permit view.
   const lower = q.toLowerCase();
   const reg = CITIES.find((c) => lower.includes(c.name.toLowerCase()));
-  if (reg) redirect(`/development/city/${reg.id}`);
+  if (reg) redirect(`/city/${reg.id}`);
 
   const { place, bundle } = await getAreaBundle(q);
   if (!place || !bundle) {
@@ -32,7 +48,7 @@ export default async function AreaPage({ searchParams }: { searchParams: Promise
   return (
     <div className="flex flex-col gap-7">
       <section>
-        <Link href="/development" className="text-xs text-muted hover:text-ink">← National overview</Link>
+        <Link href="/national" className="text-xs text-muted hover:text-ink">← National overview</Link>
         <h1 className="font-display text-[32px] font-semibold text-ink leading-tight tracking-tight mt-1">{shortName}</h1>
         <p className="text-sm text-ink-soft mt-1">
           {bundle.ok

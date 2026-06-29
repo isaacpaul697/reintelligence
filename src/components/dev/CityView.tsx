@@ -5,10 +5,42 @@ import { GapPanel } from "@/components/dev/GapPanel";
 import { DeveloperList } from "@/components/dev/DeveloperList";
 import { TypeBars } from "@/components/dev/charts";
 import { Card, SectionTitle, Stat, StateBlock } from "@/components/dev/ui";
-import { fmtNum, fmtCompactUSD, fmtDuration } from "@/lib/dev/format";
+import { fmtNum, fmtCompactUSD } from "@/lib/dev/format";
+import { TYPE_LABEL, type PropertyType } from "@/lib/dev/types";
+import type { CityKpis } from "@/lib/dev/aggregate";
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function monthYear(iso: string): string {
+  const [y, m] = iso.split("-");
+  return `${MONTHS[Number(m) - 1] ?? ""} ${y}`.trim();
+}
 
 /**
- * Shared city view body — KPI strip, map explorer, supply-gap panel, type mix,
+ * Honest "what you're looking at" notes for a live-permit city. Every line is
+ * derived from the data actually returned, never assumed: if a portal has gone
+ * stale we name the real cutoff year; if it omits valuations we say so plainly
+ * instead of letting a modeled figure read as declared. OSM-mapped areas already
+ * carry their own modeled-data disclaimer, so this only runs for permit cities.
+ */
+function buildDataNotes(kpis: CityKpis): string[] {
+  const notes: string[] = [];
+  const latest = kpis.latestDate;
+  if (latest) {
+    const ageMonths = (Date.now() - Date.parse(latest)) / 2.628e9; // ~ms per month
+    if (ageMonths > 18) {
+      notes.push(
+        `This city's open-data portal appears to have stopped updating around ${latest.slice(0, 4)}. The most recent permit on file is from ${monthYear(latest)}, so the figures below reflect that period rather than today.`,
+      );
+    }
+  }
+  if (kpis.withDeclaredValue === 0) {
+    notes.push('This feed does not report permit valuations, so "Total value" is modeled (estimated) rather than declared.');
+  }
+  return notes;
+}
+
+/**
+ * Shared city view body: KPI strip, map explorer, supply-gap panel, type mix,
  * demand context, and (portal cities only) the developer leaderboard. Rendered
  * for both registry/permit cities and OSM-backed areas. Mode controls the
  * provenance copy: permit cities can show live declared values, OSM areas are
@@ -34,23 +66,52 @@ export function CityView({ bundle }: { bundle: CityBundle }) {
 
   const devViews = developments.map((d) => toDevView(d, fred.costMultiplier));
   const valueProvenance = !osm && kpis.withDeclaredValue > kpis.count / 2 ? "live" : "estimated";
+  const dataNotes = osm ? [] : buildDataNotes(kpis);
+
+  // Replacements for the unreliable "units added" / "time-to-build" metrics: both
+  // of these are computable from every feed (value is always modeled, type is
+  // always classified), so neither falls back to a bare 0 or n/a.
+  const valueTotal = valueProvenance === "live" ? kpis.declaredValueTotal : kpis.modeledValueTotal;
+  const avgValue = kpis.count > 0 ? valueTotal / kpis.count : null;
+  const topType = (Object.entries(kpis.byType) as [PropertyType, number][])
+    .sort((a, b) => b[1] - a[1])[0];
+  const leadingType = topType && topType[1] > 0 ? topType[0] : null;
+  const leadingShare = leadingType ? Math.round((topType[1] / kpis.count) * 100) : null;
 
   return (
     <>
+      {dataNotes.length > 0 && (
+        <div className="flex items-start gap-2.5 rounded-[var(--radius-card)] border border-line bg-warn-soft px-4 py-3">
+          <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2}
+            strokeLinecap="round" strokeLinejoin="round" className="text-warn shrink-0 mt-0.5">
+            <circle cx={12} cy={12} r={9} /><path d="M12 8h.01M11 12h1v4h1" />
+          </svg>
+          <div className="text-[12.5px] text-ink-soft leading-relaxed">
+            <span className="font-semibold text-warn">Data note. </span>
+            {dataNotes.join(" ")}
+          </div>
+        </div>
+      )}
+
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Stat label="Developments" value={fmtNum(kpis.count)} provenance="live" sub={osm ? "mapped buildings" : "recent permits"} />
-        <Stat label="Units added" value={fmtNum(kpis.totalUnits)} provenance="live" sub="where reported" />
         <Stat
           label="Total value"
-          value={fmtCompactUSD(valueProvenance === "live" ? kpis.declaredValueTotal : kpis.modeledValueTotal)}
+          value={fmtCompactUSD(valueTotal)}
           provenance={valueProvenance}
           sub={osm ? "modeled from footprints" : `${kpis.withDeclaredValue} declared · rest modeled`}
         />
         <Stat
-          label="Avg time-to-build"
-          value={kpis.avgDurationDays != null ? fmtDuration(kpis.avgDurationDays) : "n/a"}
+          label="Avg project size"
+          value={avgValue != null ? fmtCompactUSD(avgValue) : "n/a"}
+          provenance={valueProvenance}
+          sub="value per development"
+        />
+        <Stat
+          label="Leading type"
+          value={leadingType ? TYPE_LABEL[leadingType] : "n/a"}
           provenance="live"
-          sub={kpis.avgDurationDays != null ? "issue to completion" : "modeled by type"}
+          sub={leadingShare != null ? `${leadingShare}% of ${osm ? "mapped buildings" : "recent permits"}` : undefined}
         />
       </section>
 

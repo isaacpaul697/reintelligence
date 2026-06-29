@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useWatchlist } from "@/lib/watchlist";
 import { Card, SectionTitle, Stat, StateBlock } from "@/components/ui";
+import { WatchlistGraphic } from "@/components/HousingGraphics";
 import { fmtNum } from "@/lib/scoring";
 import { timeAgo } from "@/lib/live/useMarketDetail";
 
@@ -52,6 +53,7 @@ export default function WatchlistPage() {
         />
       ) : (
         <>
+          <WatchlistGraphic saved={saved} />
           <Card pad={false}>
             <div className="p-5 pb-3">
               <SectionTitle sub={`${saved.length} saved apartment${saved.length === 1 ? "" : "s"}`}>

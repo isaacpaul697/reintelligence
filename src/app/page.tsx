@@ -4,34 +4,60 @@ import Link from "next/link";
 import { LogoMark } from "@/components/LogoMark";
 import { HubHero } from "@/components/HubHero";
 import { AppBackground } from "@/components/AppBackground";
+import { Reveal } from "@/components/Reveal";
 import { useSettings } from "@/lib/settings";
+import { SECTORS, SECTOR_ORDER, SECTOR_ICON, STUDENT_HOUSING_ICON } from "@/lib/dev/sectorDefs";
 
-const SECTIONS = [
+type Entry = { href: string; eyebrow: string; title: string; desc: string; color: string };
+
+/** The two primary launch cards: the national monitor and area search. */
+const ENTRIES: Entry[] = [
   {
-    href: "/student-housing",
-    eyebrow: "Acquisitions IQ",
-    title: "Student Housing",
-    desc: "Screen university markets on live demand, supply, and rent signals, with a transparent 0 to 100 acquisition score, apartment-level diligence, and a print-ready scorecard.",
-    points: ["University market screening", "On-the-ground apartment supply", "Acquisition scorecard & watchlist"],
-    icon: (
-      <svg viewBox="0 0 32 32" width={26} height={26} fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 7L3 14l13 7 13-7L16 7Z" fill="white" />
-        <path d="M8 16v5c0 1.8 3.6 3.5 8 3.5s8-1.7 8-3.5v-5l-8 4.3L8 16Z" fill="white" fillOpacity={0.85} />
-      </svg>
-    ),
-  },
-  {
-    href: "/development",
+    href: "/national",
     eyebrow: "Development Intelligence",
-    title: "Development",
-    desc: "Explore recent construction by city from live permit data: supply-gap recommendations, development economics, and developer portfolio profiles, all from free public sources.",
-    points: ["National permit activity & trends", "City explorer with supply-gap model", "Developer leaderboards & profiles"],
-    icon: (
-      <svg viewBox="0 0 24 24" width={24} height={24} fill="none" stroke="white" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 21h18M5 21V8l6-3v16M11 21V5l8 3v13M9 11h0M9 15h0M15 12h0M15 16h0" />
-      </svg>
-    ),
+    title: "National overview",
+    desc: "Live permit activity and construction trends across all 50 states from the Census Building Permits Survey, on a clickable national map.",
+    color: "#9a7b2e",
   },
+  {
+    href: "/area",
+    eyebrow: "Development Intelligence",
+    title: "Area search",
+    desc: "Sweep OpenStreetMap building footprints for any US city or area to see what has actually been built on the ground.",
+    color: "#9a7b2e",
+  },
+  {
+    href: "/build",
+    eyebrow: "Underwriting Lab",
+    title: "Build a property",
+    desc: "Design your own deal: pick a property type and location, set the basics, and get an instant valuation, income statement, financing, and return model.",
+    color: "#9a7b2e",
+  },
+];
+
+type AssetLink = { href: string; label: string; color: string; icon: string };
+
+/** Every asset-class workspace, surfaced as a quick launcher row. */
+const ASSET_CLASSES: AssetLink[] = [
+  { href: "/student-housing", label: "Student housing", color: "#9a7b2e", icon: STUDENT_HOUSING_ICON },
+  ...SECTOR_ORDER.map((slug): AssetLink => ({
+    href: `/sector/${slug}`,
+    label: SECTORS[slug].label,
+    color: SECTORS[slug].color,
+    icon: SECTOR_ICON[slug],
+  })),
+];
+
+type DataSource = { name: string; feeds: string };
+
+/** The real public feeds every figure in the app traces back to. */
+const DATA_SOURCES: DataSource[] = [
+  { name: "U.S. Census BPS", feeds: "Permit volumes by state and structure type." },
+  { name: "FRED", feeds: "Mortgage rates, housing starts, construction cost." },
+  { name: "SEC EDGAR", feeds: "Live corporate filings from public operators." },
+  { name: "Google News", feeds: "Real-time market and deal headlines." },
+  { name: "HUD Fair Market Rents", feeds: "Rent anchors for underwriting." },
+  { name: "OpenStreetMap", feeds: "On-the-ground building footprints." },
 ];
 
 export default function Hub() {
@@ -48,6 +74,14 @@ export default function Hub() {
             <div className="text-[11px] mt-1 text-muted">Live public-data analytics</div>
           </div>
         </div>
+        <div className="flex items-center gap-2">
+        <Link href="/about"
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-soft hover:text-ink px-3 py-1.5 rounded-[10px] bg-surface-2 border border-line hover:border-line-strong transition-colors">
+          <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx={12} cy={12} r={9} /><path d="M12 16v-4M12 8h.01" />
+          </svg>
+          About
+        </Link>
         <button onClick={toggleDark} aria-label="Toggle theme"
           className="grid place-items-center w-9 h-9 rounded-[10px] bg-surface-2 border border-line text-ink-soft hover:text-ink hover:border-line-strong">
           {dark ? (
@@ -60,17 +94,19 @@ export default function Hub() {
             </svg>
           )}
         </button>
+        </div>
       </header>
 
-      <main className="flex-1 w-full max-w-[1080px] mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] gap-10 lg:gap-14 items-center">
+      <main className="flex-1 w-full max-w-[1080px] mx-auto px-6 md:px-10 py-8 md:py-10">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] gap-8 lg:gap-12 items-center">
           <div className="max-w-[640px]">
             <div className="text-[12px] font-semibold uppercase tracking-[1.6px] text-gold-deep">Real Estate Intelligence</div>
-            <h1 className="font-display text-[34px] md:text-[44px] leading-[1.08] font-semibold text-ink mt-3">
+            <h1 className="font-display text-[30px] md:text-[38px] leading-[1.08] font-semibold text-ink mt-2.5">
               One workspace for the deals you buy and the supply you watch.
             </h1>
-            <p className="text-[15px] text-ink-soft mt-4 leading-relaxed">
-              Two intelligence suites, one source of truth. Every number traces to live public data. Pick a workspace to begin.
+            <p className="text-[14.5px] text-ink-soft mt-3 leading-relaxed">
+              Every number traces to live public data. Pick a workspace to begin: a national development monitor,
+              a per-asset-class deep dive, or the student-housing acquisitions desk.
             </p>
           </div>
           <div className="hidden md:block">
@@ -78,38 +114,70 @@ export default function Hub() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mt-12">
-          {SECTIONS.map((s) => (
-            <Link key={s.href} href={s.href}
-              className="group block rounded-[var(--radius)] bg-surface border border-line p-6 md:p-7 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:border-line-strong transition-all">
-              <div className="flex items-center gap-3">
-                <span className="inline-grid place-items-center w-11 h-11 rounded-[12px]"
-                  style={{ background: "linear-gradient(150deg, var(--gold-bright), var(--gold-deep))", boxShadow: "0 1px 3px rgba(0,0,0,.12)" }}>
-                  {s.icon}
-                </span>
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[1.2px] text-muted">{s.eyebrow}</div>
-                  <div className="font-display text-[20px] font-semibold text-ink leading-tight">{s.title}</div>
-                </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
+          {ENTRIES.map((e, i) => (
+            <Reveal key={e.href} delayMs={i * 60}>
+            <Link href={e.href}
+              className="group block h-full rounded-[var(--radius)] bg-surface border border-line p-5 md:p-6 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:border-line-strong transition-all">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: e.color }} />
+                <div className="text-[10.5px] font-semibold uppercase tracking-[1.2px] text-muted">{e.eyebrow}</div>
               </div>
-              <p className="text-[13.5px] text-ink-soft mt-4 leading-relaxed">{s.desc}</p>
-              <ul className="mt-4 space-y-1.5">
-                {s.points.map((p) => (
-                  <li key={p} className="flex items-center gap-2 text-[13px] text-ink-soft">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--gold)" }} />
-                    {p}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-deep group-hover:gap-2.5 transition-all">
-                Open {s.title}
-                <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <div className="font-display text-[19px] font-semibold text-ink leading-tight mt-2">{e.title}</div>
+              <p className="text-[13px] text-ink-soft mt-2 leading-relaxed">{e.desc}</p>
+              <div className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold-deep group-hover:gap-2.5 transition-all">
+                Open
+                <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </div>
             </Link>
+            </Reveal>
           ))}
         </div>
+
+        {/* Asset-class workspaces, as a single-row launcher beneath the main cards. */}
+        <Reveal delayMs={ENTRIES.length * 60}>
+          <div className="mt-8">
+            <div className="text-[10.5px] font-semibold uppercase tracking-[1.2px] text-muted">Explore by asset class</div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mt-3.5">
+              {ASSET_CLASSES.map((a) => (
+                <Link key={a.href} href={a.href}
+                  className="group flex flex-col items-center text-center gap-2 rounded-[var(--radius)] bg-surface border border-line px-2 py-3.5 shadow-[var(--shadow)] hover:border-line-strong hover:shadow-[var(--shadow-lg)] transition-all">
+                  <span className="grid place-items-center w-9 h-9 rounded-full shrink-0 transition-transform group-hover:-translate-y-0.5"
+                    style={{ background: `color-mix(in srgb, ${a.color} 16%, transparent)` }}>
+                    <svg viewBox="0 0 24 24" width={18} height={18} fill="none" stroke={a.color} strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+                      <path d={a.icon} />
+                    </svg>
+                  </span>
+                  <span className="text-[12px] font-semibold text-ink-soft leading-tight group-hover:text-ink transition-colors">{a.label}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Trust band: the live public feeds every workspace is built on. */}
+        <Reveal delayMs={(ENTRIES.length + 1) * 60}>
+          <div className="mt-8">
+            <div className="flex items-center gap-2">
+              <span className="relative flex w-2 h-2">
+                <span className="absolute inline-flex w-full h-full rounded-full bg-good opacity-60 animate-ping" />
+                <span className="relative inline-flex w-2 h-2 rounded-full bg-good" />
+              </span>
+              <div className="text-[10.5px] font-semibold uppercase tracking-[1.2px] text-muted">Built entirely on live public data</div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mt-3.5">
+              {DATA_SOURCES.map((s) => (
+                <div key={s.name}
+                  className="rounded-[var(--radius)] bg-surface border border-line px-3 py-3 shadow-[var(--shadow)]">
+                  <div className="text-[12px] font-semibold text-ink leading-tight">{s.name}</div>
+                  <p className="text-[11px] text-muted mt-1.5 leading-snug">{s.feeds}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
       </main>
 
       <footer className="border-t border-line px-6 md:px-10 py-5 text-[12px] text-muted">

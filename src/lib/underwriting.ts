@@ -42,6 +42,9 @@ export interface UwInputs {
   mortgageRate: number | null;
   /** Income mode: stabilized occupancy (0-1), modeled from live enrollment. */
   occupancy?: number | null;
+  /** Local market multiplier on modeled rent (1 = US average). Development
+   *  mode only; scales modeled rents to the chosen city. Modeled assumption. */
+  marketFactor?: number | null;
 }
 
 export interface UwAssumptions {
@@ -176,20 +179,22 @@ function grossRent(inp: UwInputs): { value: number | null; provenance: Provenanc
     return { value: null, provenance: "estimated", note: "No rent inputs available" };
   }
   // development mode
+  const mkt = inp.marketFactor != null && inp.marketFactor > 0 ? inp.marketFactor : 1;
+  const mktNote = mkt !== 1 ? ` x ${mkt.toFixed(2)} local market` : "";
   if (inp.units != null && inp.units > 0 && RENT_PER_UNIT[inp.propertyType]) {
     const perUnit = RENT_PER_UNIT[inp.propertyType]!;
     return {
-      value: inp.units * perUnit * 12,
+      value: inp.units * perUnit * 12 * mkt,
       provenance: "estimated",
-      note: `${inp.units} units x $${perUnit.toLocaleString()}/mo modeled rent x 12`,
+      note: `${inp.units} units x $${perUnit.toLocaleString()}/mo modeled rent x 12${mktNote}`,
     };
   }
   if (inp.sqft != null && inp.sqft > 0 && RENT_PER_SQFT_YR[inp.propertyType]) {
     const perSqft = RENT_PER_SQFT_YR[inp.propertyType]!;
     return {
-      value: inp.sqft * perSqft,
+      value: inp.sqft * perSqft * mkt,
       provenance: "estimated",
-      note: `${inp.sqft.toLocaleString()} sqft x $${perSqft}/sqft/yr modeled rent`,
+      note: `${inp.sqft.toLocaleString()} sqft x $${perSqft}/sqft/yr modeled rent${mktNote}`,
     };
   }
   return { value: null, provenance: "estimated", note: "No units or floor area to model rent" };

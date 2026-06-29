@@ -43,7 +43,7 @@ async function resolve(id: string): Promise<Resolved | null> {
       view: toDevView(dev, bundle.fred.costMultiplier),
       cityName: bundle.city.name,
       cityState: bundle.city.state,
-      backHref: `/development/city/${cityId}`,
+      backHref: `/city/${cityId}`,
       developerCity: cityId,
       osm: false,
       mortgageRate: bundle.fred.mortgageRate,
@@ -62,7 +62,7 @@ async function resolve(id: string): Promise<Resolved | null> {
     view: toDevView(dev, fred.costMultiplier),
     cityName: registry ? registry.name : query.replace(/\b\w/g, (c) => c.toUpperCase()),
     cityState: registry ? registry.state : "",
-    backHref: registry ? `/development/city/${cityId}` : `/development/area?q=${encodeURIComponent(query)}`,
+    backHref: registry ? `/city/${cityId}` : `/area?q=${encodeURIComponent(query)}`,
     developerCity: null,
     osm: true,
     mortgageRate: fred.mortgageRate,
@@ -140,7 +140,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ to
             {view.developer ? (
               developerCity ? (
                 <Link
-                  href={`/development/developer/${developerCity}/${slugifyDeveloper(view.developer)}`}
+                  href={`/developer/${developerCity}/${slugifyDeveloper(view.developer)}`}
                   className="font-display text-[16px] font-semibold text-gold-deep hover:underline"
                 >
                   {view.developer} →

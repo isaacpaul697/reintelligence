@@ -1,19 +1,24 @@
 import Link from "next/link";
 import { fetchBps, STATE_NAME } from "@/lib/dev/live/bps";
 import { fetchFred } from "@/lib/dev/live/fred";
+import { fetchNationalSignals } from "@/lib/dev/live/signals";
 import { CITIES } from "@/lib/dev/cities";
 import type { CityConfig } from "@/lib/dev/types";
 import { StatePermitLeaderboard } from "@/components/dev/MarketLeaderboard";
+import { LiveSignalFeed } from "@/components/dev/LiveSignalFeed";
 import { NationalMap } from "@/components/dev/NationalMap";
+import { LinkSpinner } from "@/components/dev/LinkSpinner";
 import { DevConstructionHero } from "@/components/dev/DevConstructionHero";
 import { CompositionTrend } from "@/components/dev/charts";
 import { Card, SectionTitle, Stat, StateBlock } from "@/components/dev/ui";
+import { Reveal } from "@/components/Reveal";
+import { CountUp } from "@/components/CountUp";
 import { fmtNum, fmtCompactUSD } from "@/lib/dev/format";
 
 export const revalidate = 43200;
 
 export default async function HomePage() {
-  const [bps, fred] = await Promise.all([fetchBps(), fetchFred()]);
+  const [bps, fred, signals] = await Promise.all([fetchBps(), fetchFred(), fetchNationalSignals()]);
 
   const natUnits = bps ? bps.states.reduce((s, r) => s + r.totalUnits, 0) : null;
   const natMf = bps ? bps.states.reduce((s, r) => s + r.units5, 0) : null;
@@ -54,14 +59,14 @@ export default async function HomePage() {
 
       {bps ? (
         <>
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Stat label={`Units authorized · ${bps.year}`} value={fmtNum(natUnits)} provenance="live" sub="all structure types" />
-            <Stat label="Multifamily (5+)" value={fmtNum(natMf)} provenance="live" sub={natUnits ? `${Math.round((natMf! / natUnits) * 100)}% of units` : undefined} />
-            <Stat label="Single-family" value={fmtNum(natSf)} provenance="live" sub={natUnits ? `${Math.round((natSf! / natUnits) * 100)}% of units` : undefined} />
-            <Stat label="Declared value" value={fmtCompactUSD(natValue)} provenance="live" sub="permit valuations" />
-          </section>
+          <Reveal className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Stat label={`Units authorized · ${bps.year}`} value={fmtNum(natUnits)} to={natUnits ?? 0} format="num" provenance="live" sub="all structure types" />
+            <Stat label="Multifamily (5+)" value={fmtNum(natMf)} to={natMf ?? 0} format="num" provenance="live" sub={natUnits ? `${Math.round((natMf! / natUnits) * 100)}% of units` : undefined} />
+            <Stat label="Single-family" value={fmtNum(natSf)} to={natSf ?? 0} format="num" provenance="live" sub={natUnits ? `${Math.round((natSf! / natUnits) * 100)}% of units` : undefined} />
+            <Stat label="Declared value" value={fmtCompactUSD(natValue)} to={natValue ?? 0} format="compactUsd" provenance="live" sub="permit valuations" />
+          </Reveal>
 
-          <section className="grid lg:grid-cols-3 gap-4">
+          <Reveal className="grid lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
               <Card>
                 <SectionTitle sub={`Census Building Permits Survey · annual state totals, ${bps.year} · shade = units authorized, click a state to open its map`}>
@@ -87,28 +92,44 @@ export default async function HomePage() {
                 <div className="text-xs text-muted">Market context (FRED)</div>
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm text-ink-soft">30-yr mortgage</span>
-                  <span className="font-display text-lg font-semibold num">{fred.mortgageRate != null ? `${fred.mortgageRate.toFixed(2)}%` : "n/a"}</span>
+                  <span className="font-display text-lg font-semibold num">
+                    {fred.mortgageRate != null ? <CountUp to={fred.mortgageRate} format="pct2" /> : "n/a"}
+                  </span>
                 </div>
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm text-ink-soft">Housing starts</span>
-                  <span className="font-display text-lg font-semibold num">{fred.housingStartsK != null ? `${fmtNum(fred.housingStartsK)}K` : "n/a"}</span>
+                  <span className="font-display text-lg font-semibold num">
+                    {fred.housingStartsK != null ? <CountUp to={fred.housingStartsK} format="startsK" /> : "n/a"}
+                  </span>
                 </div>
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm text-ink-soft">Constr. cost vs &apos;19</span>
-                  <span className="font-display text-lg font-semibold num">{`${((fred.costMultiplier - 1) * 100).toFixed(0)}%`}</span>
+                  <span className="font-display text-lg font-semibold num">
+                    <CountUp to={(fred.costMultiplier - 1) * 100} format="pct0" />
+                  </span>
                 </div>
               </Card>
             </div>
-          </section>
+          </Reveal>
 
-          <Card>
-            <SectionTitle sub={`${bps.year} · top states ranked by total units · bar length = volume, color split = structure mix · click a state to open its map`}>
-              State rankings
-            </SectionTitle>
-            <StatePermitLeaderboard states={bps.states} />
-          </Card>
+          <Reveal>
+            <Card>
+              <SectionTitle sub={`${bps.year} · top states ranked by total units · bar length = volume, color split = structure mix · click a state to open its map`}>
+                State rankings
+              </SectionTitle>
+              <StatePermitLeaderboard states={bps.states} />
+            </Card>
+          </Reveal>
 
-          <section>
+          <Reveal>
+            <LiveSignalFeed
+              signals={signals}
+              title="Live signal feed"
+              sub="Cross-sector SEC filings and U.S. real-estate development headlines, newest first."
+            />
+          </Reveal>
+
+          <Reveal>
             <SectionTitle sub="Live-permit portals show real valuations and developers. Every other city is mapped from OpenStreetMap footprints with modeled economics. Search any U.S. city above.">
               Explore a city
             </SectionTitle>
@@ -123,7 +144,7 @@ export default async function HomePage() {
                   return (
                     <Link
                       key={c.id}
-                      href={`/development/city/${c.id}`}
+                      href={`/city/${c.id}`}
                       className="block bg-surface border border-line rounded-[var(--radius-card)] p-5 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5 transition-all"
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -140,7 +161,9 @@ export default async function HomePage() {
                           {fmtNum(row.totalUnits)} units authorized statewide ({bps.year})
                         </div>
                       )}
-                      <div className="text-[13px] text-gold-deep font-semibold mt-3">Explore developments →</div>
+                      <div className="text-[13px] text-gold-deep font-semibold mt-3 flex items-center gap-1.5">
+                        Explore developments → <LinkSpinner />
+                      </div>
                     </Link>
                   );
                 })}
@@ -171,20 +194,23 @@ export default async function HomePage() {
                     {cities.map((c) => (
                       <Link
                         key={c.id}
-                        href={`/development/city/${c.id}`}
+                        href={`/city/${c.id}`}
                         className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-[8px] text-[13.5px] text-ink-soft hover:bg-surface-2 hover:text-ink transition-colors"
                       >
                         <span>{c.name}</span>
-                        {c.socrata && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-good shrink-0" title="Live permit portal" />
-                        )}
+                        <span className="flex items-center gap-1.5 shrink-0">
+                          <LinkSpinner />
+                          {c.socrata && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-good" title="Live permit portal" />
+                          )}
+                        </span>
                       </Link>
                     ))}
                   </div>
                 </details>
               ))}
             </div>
-          </section>
+          </Reveal>
         </>
       ) : (
         <StateBlock

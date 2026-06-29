@@ -6,13 +6,56 @@ import { LogoMark } from "./LogoMark";
 import { IntegrationsPanel } from "./IntegrationsPanel";
 import { useMobileNav } from "./MobileNav";
 import { CITIES } from "@/lib/dev/cities";
+import { SECTORS, SECTOR_ORDER, sectorSubnav, SECTOR_ICON } from "@/lib/dev/sectorDefs";
 
 const PIN = "M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Zm0-9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z";
 
-type Section = "housing" | "development";
 type Item = { href: string; name: string; icon: string; exact?: boolean };
 type Group = { label: string; items: Item[] };
 
+/** Top-level sections, in the order Isaac specified. Each is its own world with
+ *  its own sub-navigation, mirroring how student housing is set up. */
+type SectionTab = {
+  key: string;
+  href: string;
+  label: string;
+  icon: string;
+  match: (p: string) => boolean;
+};
+
+const NATIONAL_ICON = "M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Zm6 0v12m6-9v12";
+const AREA_ICON = "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.3-4.3";
+const HOUSING_ICON =
+  "M12 5 2 10l10 5 10-5-10-5ZM6 12v4.4c0 1.5 2.7 2.5 6 2.5s6-1 6-2.5V12M22 10v6.5M21 17.5a1 1 0 1 0 2 0 1 1 0 1 0 -2 0";
+const CLASS_ICON = "M3 21h18M5 21V8l6-3v16M11 21V5l8 3v13";
+const BUILD_ICON = "M3 21h18M5 21V11l4-2v12M13 21V7l6-3v17M9 13h0M17 9h0";
+
+const SECTIONS: SectionTab[] = [
+  {
+    key: "national",
+    href: "/national",
+    label: "National overview",
+    icon: NATIONAL_ICON,
+    match: (p) =>
+      p === "/national" ||
+      p.startsWith("/national/") ||
+      p.startsWith("/city/") ||
+      p.startsWith("/project/") ||
+      p.startsWith("/developer/"),
+  },
+  { key: "area", href: "/area", label: "Area search", icon: AREA_ICON, match: (p) => p.startsWith("/area") },
+  { key: "student-housing", href: "/student-housing", label: "Student housing", icon: HOUSING_ICON, match: (p) => p.startsWith("/student-housing") },
+  ...SECTOR_ORDER.map((slug) => ({
+    key: slug,
+    href: `/sector/${slug}`,
+    label: SECTORS[slug].label,
+    icon: SECTOR_ICON[slug] ?? CLASS_ICON,
+    match: (p: string) => p === `/sector/${slug}` || p.startsWith(`/sector/${slug}/`),
+  })),
+  { key: "build", href: "/build", label: "Build a property", icon: BUILD_ICON, match: (p) => p.startsWith("/build") },
+];
+
+/** Student housing keeps its rich, multi-tool sidebar exactly as before. */
 const HOUSING_GROUPS: Group[] = [
   {
     label: "Overview",
@@ -28,6 +71,7 @@ const HOUSING_GROUPS: Group[] = [
       { href: "/student-housing/apartments", name: "Apartments", icon: "M4 6h16M4 12h16M4 18h16" },
       { href: "/student-housing/top10", name: "Top 10 Markets", icon: "M5 19h4V9H5v10Zm6 0h4V5h-4v14Zm6 0h4v-6h-4v6Z" },
       { href: "/student-housing/top-apartments", name: "Top 10 Apartments", icon: "M3 21h18M9 21V9h6v12M6 21V12h3v9m6 0V12h3v9" },
+      { href: "/student-housing/players", name: "Major Players & Moves", icon: "M16 7a4 4 0 1 0-8 0 4 4 0 0 0 8 0Zm-12 14a8 8 0 0 1 16 0M19 8l1.5 1.5L23 7" },
     ],
   },
   {
@@ -41,71 +85,74 @@ const HOUSING_GROUPS: Group[] = [
   {
     label: "Project",
     items: [
-      { href: "/student-housing/about", name: "About / Methodology", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" },
       { href: "/student-housing/settings", name: "Settings", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm8-3a8 8 0 0 0-.2-1.8l2-1.5-2-3.4-2.3 1a8 8 0 0 0-3-1.7L14 1h-4l-.5 2.3a8 8 0 0 0-3 1.7l-2.3-1-2 3.4 2 1.5A8 8 0 0 0 4 12c0 .6 0 1.2.2 1.8l-2 1.5 2 3.4 2.3-1a8 8 0 0 0 3 1.7L10 23h4l.5-2.3a8 8 0 0 0 3-1.7l2.3 1 2-3.4-2-1.5c.2-.6.2-1.2.2-1.8Z" },
     ],
   },
 ];
 
-const DEV_GROUPS: Group[] = [
-  {
-    label: "Tools",
-    items: [
-      { href: "/development", name: "National Overview & Map", icon: "M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Zm6 0v12m6-9v12", exact: true },
-      { href: "/development/area", name: "Area Search", icon: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.3-4.3" },
-    ],
-  },
-  {
-    label: "Live permit cities",
-    items: CITIES.filter((c) => c.socrata).map((c) => ({
-      href: `/development/city/${c.id}`,
-      name: `${c.name}, ${c.state}`,
-      icon: PIN,
-    })),
-  },
-  {
-    label: "Reference",
-    items: [
-      { href: "/development/methodology", name: "Methodology", icon: "M5 3h11l3 3v15H5V3Zm3 6h8M8 13h8M8 17h5" },
-    ],
-  },
-];
+const LEADERBOARD_ICON = "M5 19h4V9H5v10Zm6 0h4V5h-4v14Zm6 0h4v-6h-4v6Z";
+const OVERVIEW_ICON = "M4 6h16M4 12h16M4 18h16";
+const PLAYERS_ICON = "M16 7a4 4 0 1 0-8 0 4 4 0 0 0 8 0Zm-12 14a8 8 0 0 1 16 0M19 8l1.5 1.5L23 7";
 
-/** Top-level workspaces. Student housing is its own fully-live world; each
- *  development asset class is its own specialized tab. */
-type Tab = { href: string; label: string; match: (p: string) => boolean };
-const HOUSING_TAB: Tab = {
-  href: "/student-housing",
-  label: "Student Housing",
-  match: (p) => p.startsWith("/student-housing"),
-};
-/** Development home: the national overview + permit map. */
-const DEV_HOME_TAB: Tab = {
-  href: "/development",
-  label: "Development",
-  match: (p) => p === "/development",
-};
-const SECTOR_TABS: Tab[] = [
-  { href: "/development/sector/multifamily", label: "Multifamily", match: (p) => p.startsWith("/development/sector/multifamily") },
-  { href: "/development/sector/single-townhome", label: "Single / Townhome", match: (p) => p.startsWith("/development/sector/single-townhome") },
-  { href: "/development/sector/industrial", label: "Industrial", match: (p) => p.startsWith("/development/sector/industrial") },
-  { href: "/development/sector/office", label: "Office", match: (p) => p.startsWith("/development/sector/office") },
-  { href: "/development/sector/retail", label: "Retail", match: (p) => p.startsWith("/development/sector/retail") },
-  { href: "/development/sector/affordable", label: "Affordable", match: (p) => p.startsWith("/development/sector/affordable") },
-];
+/** Contextual sub-navigation for the active top-level section. */
+function subnavFor(sectionKey: string): Group[] {
+  if (sectionKey === "student-housing") return HOUSING_GROUPS;
 
-/** Logo + section switcher + nav links + integrations. Shared by the desktop
- *  rail and the mobile drawer. */
-function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?: () => void }) {
+  if (sectionKey === "national") {
+    const liveCities = CITIES.filter((c) => c.socrata);
+    return [
+      {
+        label: "Overview",
+        items: [{ href: "/national", name: "National Overview & Map", icon: NATIONAL_ICON, exact: true }],
+      },
+      {
+        label: "Live permit cities",
+        items: liveCities.map((c) => ({ href: `/city/${c.id}`, name: `${c.name}, ${c.state}`, icon: PIN })),
+      },
+    ];
+  }
+
+  if (sectionKey === "area") {
+    return [
+      {
+        label: "Tools",
+        items: [{ href: "/area", name: "Area Search", icon: AREA_ICON, exact: true }],
+      },
+    ];
+  }
+
+  if (sectionKey === "build") {
+    return [
+      {
+        label: "Tools",
+        items: [{ href: "/build", name: "Underwriting Lab", icon: BUILD_ICON, exact: true }],
+      },
+    ];
+  }
+
+  // Asset classes: Overview, Leaderboards (residential only), Players & news.
+  const iconFor = (slug: string) => (slug === "leaderboards" ? LEADERBOARD_ICON : slug === "players" ? PLAYERS_ICON : OVERVIEW_ICON);
+  return [
+    {
+      label: "In this section",
+      items: sectorSubnav(sectionKey).map((p) => ({
+        href: p.slug ? `/sector/${sectionKey}/${p.slug}` : `/sector/${sectionKey}`,
+        name: p.name,
+        icon: iconFor(p.slug),
+        exact: p.slug === "",
+      })),
+    },
+  ];
+}
+
+/** Logo + section navigator + contextual sub-nav + integrations. Shared by the
+ *  desktop rail and the mobile drawer. Fully pathname-driven. */
+function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const path = usePathname();
-  const groups = section === "housing" ? HOUSING_GROUPS : DEV_GROUPS;
-  const subtitle = section === "housing" ? "Student Housing Acquisitions IQ" : "Development Intelligence";
-  const isActive = (it: Item) => path === it.href || (!it.exact && path.startsWith(it.href + "/"));
-  const sectorActive = SECTOR_TABS.some((t) => t.match(path));
-  // The two top-level worlds. "Development" lands on the national overview/map;
-  // it stays highlighted everywhere in development except inside an asset class.
-  const housingActive = section === "housing";
-  const devHomeActive = section === "development" && !sectorActive;
+  const active = SECTIONS.find((s) => s.match(path)) ?? SECTIONS[0];
+  const isHousing = active.key === "student-housing";
+  const groups = subnavFor(active.key);
+  const isItemActive = (it: Item) => path === it.href || (!it.exact && path.startsWith(it.href + "/"));
 
   return (
     <>
@@ -114,74 +161,52 @@ function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?
           <LogoMark size={40} />
           <div>
             <div className="font-display text-[16px] font-semibold text-ink leading-none tracking-tight">Real Estate Intelligence</div>
-            <div className="text-[11px] mt-1 text-muted">{subtitle}</div>
+            <div className="text-[11px] mt-1 text-muted">Live public-data analytics</div>
           </div>
         </Link>
       </div>
 
-      <div className="px-3 pb-3">
-        <div className="p-1 rounded-[10px] bg-surface-2 border border-line flex flex-col gap-1">
-          {/* The two top-level worlds */}
-          <div className="grid grid-cols-2 gap-1">
-            <Link href={HOUSING_TAB.href} onClick={onNavigate}
-              className={`text-center text-[12px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
-                housingActive ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
-              }`}>
-              {HOUSING_TAB.label}
-            </Link>
-            <Link href={DEV_HOME_TAB.href} onClick={onNavigate}
-              className={`text-center text-[12px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
-                devHomeActive ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
-              }`}>
-              {DEV_HOME_TAB.label}
-            </Link>
-          </div>
-          {/* Development asset classes, each its own specialized tab. Only
-              relevant inside the development world, so hide them in housing. */}
-          {section === "development" && (
-            <>
-              <div className="text-[9.5px] uppercase tracking-[1.2px] font-semibold text-muted-2 px-1.5 pt-1">
-                Asset classes
-              </div>
-              <div className="grid grid-cols-2 gap-1">
-                {SECTOR_TABS.map((t) => {
-                  const active = t.match(path);
-                  return (
-                    <Link key={t.href} href={t.href} onClick={onNavigate}
-                      className={`text-center text-[11.5px] font-semibold py-1.5 px-1 rounded-[7px] transition-colors ${
-                        active ? "bg-surface text-ink shadow-[var(--shadow)]" : "text-muted hover:text-ink"
-                      }`}>
-                      {t.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            </>
-          )}
+      {/* Top-level section navigator: every world Isaac defined, in order. */}
+      <div className="px-3 pb-2">
+        <div className="text-[10px] uppercase tracking-[1.4px] font-semibold px-3 pb-1.5 text-muted-2">Workspaces</div>
+        <div className="flex flex-col gap-0.5">
+          {SECTIONS.map((s) => {
+            const on = s.key === active.key;
+            return (
+              <Link key={s.key} href={s.href} onClick={onNavigate}
+                className={`relative flex items-center gap-2.5 px-3 py-1.5 rounded-[9px] text-[13px] transition-colors ${
+                  on ? "bg-gold-soft text-ink font-semibold" : "text-ink-soft hover:bg-surface-2 font-medium"
+                }`}>
+                {on && <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full" style={{ background: "var(--gold)" }} />}
+                <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={1.7}
+                  strokeLinecap="round" strokeLinejoin="round" style={on ? { color: "var(--gold)" } : { opacity: 0.65 }}>
+                  <path d={s.icon} />
+                </svg>
+                {s.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto nav-scroll px-3 py-2">
+      <div className="mx-3 my-2 border-t border-line" />
+
+      <nav className="flex-1 overflow-y-auto nav-scroll px-3 py-1">
         {groups.map((g) => (
           <div key={g.label} className="mb-5">
             <div className="text-[10px] uppercase tracking-[1.4px] font-semibold px-3 pb-2 text-muted-2">
               {g.label}
             </div>
             {g.items.map((it) => {
-              const active = isActive(it);
+              const on = isItemActive(it);
               return (
                 <Link key={it.href} href={it.href} onClick={onNavigate}
                   className={`relative flex items-center gap-3 px-3 py-2 mb-0.5 rounded-[10px] text-[13.5px] transition-colors ${
-                    active
-                      ? "bg-gold-soft text-ink font-semibold"
-                      : "text-ink-soft hover:bg-surface-2 font-medium"
+                    on ? "bg-gold-soft text-ink font-semibold" : "text-ink-soft hover:bg-surface-2 font-medium"
                   }`}>
-                  {active && (
-                    <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--gold)" }} />
-                  )}
+                  {on && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--gold)" }} />}
                   <svg viewBox="0 0 24 24" width={17} height={17} fill="none" stroke="currentColor" strokeWidth={1.7}
-                    strokeLinecap="round" strokeLinejoin="round"
-                    style={active ? { color: "var(--gold)" } : { opacity: 0.7 }}>
+                    strokeLinecap="round" strokeLinejoin="round" style={on ? { color: "var(--gold)" } : { opacity: 0.7 }}>
                     <path d={it.icon} />
                   </svg>
                   {it.name}
@@ -190,9 +215,24 @@ function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?
             })}
           </div>
         ))}
+
+        <div className="mb-5">
+          <div className="text-[10px] uppercase tracking-[1.4px] font-semibold px-3 pb-2 text-muted-2">Reference</div>
+          <Link href="/about" onClick={onNavigate}
+            className={`relative flex items-center gap-3 px-3 py-2 mb-0.5 rounded-[10px] text-[13.5px] transition-colors ${
+              path === "/about" ? "bg-gold-soft text-ink font-semibold" : "text-ink-soft hover:bg-surface-2 font-medium"
+            }`}>
+            {path === "/about" && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--gold)" }} />}
+            <svg viewBox="0 0 24 24" width={17} height={17} fill="none" stroke="currentColor" strokeWidth={1.7}
+              strokeLinecap="round" strokeLinejoin="round" style={path === "/about" ? { color: "var(--gold)" } : { opacity: 0.7 }}>
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0" />
+            </svg>
+            About &amp; methodology
+          </Link>
+        </div>
       </nav>
 
-      {section === "housing" && (
+      {isHousing && (
         <div className="px-3 pt-3 pb-4 border-t border-line">
           <IntegrationsPanel />
         </div>
@@ -201,14 +241,14 @@ function SidebarContent({ section, onNavigate }: { section: Section; onNavigate?
   );
 }
 
-export function Sidebar({ section }: { section: Section }) {
+export function Sidebar() {
   const { open, setOpen } = useMobileNav();
 
   return (
     <>
       {/* Desktop rail */}
       <aside className="no-print hidden lg:flex w-[248px] shrink-0 sticky top-0 h-screen flex-col bg-surface border-r border-line">
-        <SidebarContent section={section} />
+        <SidebarContent />
       </aside>
 
       {/* Mobile drawer + backdrop */}
@@ -222,7 +262,7 @@ export function Sidebar({ section }: { section: Section }) {
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <SidebarContent section={section} onNavigate={() => setOpen(false)} />
+          <SidebarContent onNavigate={() => setOpen(false)} />
         </aside>
       </div>
     </>

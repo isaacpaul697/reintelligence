@@ -51,7 +51,7 @@ export default async function DeveloperPage({ params }: { params: Promise<{ city
       <section className="flex items-start gap-4">
         <FirmLogo src={firmLogo(name)} name={name} size={56} />
         <div className="min-w-0">
-          <Link href={`/development/city/${cityId}`} className="text-xs text-muted hover:text-ink">← {bundle.city.name} developers</Link>
+          <Link href={`/city/${cityId}`} className="text-xs text-muted hover:text-ink">← {bundle.city.name} developers</Link>
           <h1 className="font-display text-[28px] font-semibold text-ink leading-tight tracking-tight mt-0.5">{name}</h1>
           <p className="text-xs text-muted-2 mt-1">
             Permit-derived activity in {bundle.city.name}, {bundle.city.state}, not a legal title/ownership record.
@@ -94,7 +94,7 @@ export default async function DeveloperPage({ params }: { params: Promise<{ city
           {[...views].sort((a, b) => (b.cost.value ?? 0) - (a.cost.value ?? 0)).map((v) => (
             <Link
               key={v.id}
-              href={`/development/project/${v.token}`}
+              href={`/project/${v.token}`}
               className="block bg-surface border border-line rounded-[var(--radius-card)] p-4 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5 transition-all"
             >
               <div className="flex items-center justify-between">

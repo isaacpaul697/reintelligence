@@ -121,7 +121,7 @@ export function CityExplorer({
         {sorted.slice(0, 60).map((d) => (
           <Link
             key={d.id}
-            href={`/development/project/${d.token}`}
+            href={`/project/${d.token}`}
             className="block bg-surface border border-line rounded-[var(--radius-card)] p-4 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5 transition-all"
           >
             <div className="flex items-start justify-between gap-2">

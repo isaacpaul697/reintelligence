@@ -8,6 +8,7 @@ import { fmtNum } from "@/lib/scoring";
 import { usePersistedState } from "@/lib/usePersistedState";
 import { useWatchlist } from "@/lib/watchlist";
 import ApartmentDrawer from "@/components/ApartmentDrawer";
+import { TopApartmentsGraphic } from "@/components/HousingGraphics";
 import type { Apartment } from "@/lib/types";
 
 const fmtMoney = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
@@ -85,6 +86,10 @@ export default function TopApartmentsPage() {
     setDrawerMarket({ id: mktId, name: mktName, state: mktState });
   };
 
+  const graphicApts = isNational ? nationalApts.slice(0, 10) : top10School;
+  const graphicMarkets = isNational ? new Set(nationalApts.slice(0, 10).map((a) => a.marketId)).size : undefined;
+  const graphicLoading = isNational ? nationalLoading : schoolAptLoading;
+
   if (loading) return <Spinner />;
   if (error) return <StateBlock title="Live feed unavailable" note="Could not load market data. Try refreshing." />;
 
@@ -146,6 +151,8 @@ export default function TopApartmentsPage() {
           </div>
         </div>
       )}
+
+      {!graphicLoading && <TopApartmentsGraphic apts={graphicApts} marketsCount={graphicMarkets} />}
 
       {isNational ? (
         nationalLoading ? (

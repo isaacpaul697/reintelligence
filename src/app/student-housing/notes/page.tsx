@@ -6,6 +6,7 @@ import { usePreloadedApartments } from "@/lib/live/allApartments";
 import { useNotes } from "@/lib/notes";
 import { usePersistedState } from "@/lib/usePersistedState";
 import { Card, SectionTitle, Logo, Spinner, StateBlock } from "@/components/ui";
+import { NotesGraphic } from "@/components/HousingGraphics";
 import { fmtNum } from "@/lib/scoring";
 
 /** Debounced autosave textarea. `value`/`onSave` come from the notes store. */
@@ -86,6 +87,7 @@ export default function NotesPage() {
   if (error) return <StateBlock title="Live feed unavailable" note="Could not load market data. Try refreshing." />;
 
   const notedApts = aptNoteCount(apartments.map((a) => a.id));
+  const schoolsWithNotes = scored.filter((m) => hasSchoolNote(m.market.id)).length;
 
   return (
     <div className="cc-fade max-w-[900px] mx-auto">
@@ -124,6 +126,14 @@ export default function NotesPage() {
           </div>
         </div>
       )}
+
+      <NotesGraphic
+        totalMarkets={scored.length}
+        schoolsWithNotes={schoolsWithNotes}
+        aptsNearActive={aptLoading ? 0 : apartments.length}
+        notedApts={notedApts}
+        activeLabel={market?.shortName ?? "campus"}
+      />
 
       {/* School-level notes */}
       <Card className="mb-6">

@@ -6,6 +6,7 @@ import { useScoredMarkets } from "@/lib/compute";
 import { usePreloadedApartments } from "@/lib/live/allApartments";
 import { Card, LabelChip, SectionTitle, ProvenanceTag, Logo, Spinner, StateBlock } from "@/components/ui";
 import { ScoreRing, FactorBars } from "@/components/charts";
+import { ScorecardGraphic } from "@/components/HousingGraphics";
 import { fmtNum, fmtPct, fmtMoney } from "@/lib/scoring";
 import { usePersistedState } from "@/lib/usePersistedState";
 
@@ -109,14 +110,28 @@ function ScorecardInner() {
               {!picking ? (
                 <button
                   onClick={() => setPicking(true)}
-                  className="w-full flex items-center gap-3 text-left p-2 -m-2 rounded-[10px] hover:bg-surface-2 transition-colors"
+                  title="Click to change the school"
+                  className="group w-full flex items-center gap-3 text-left p-2 -m-2 rounded-[10px] border border-transparent hover:border-line hover:bg-surface-2 hover:shadow-[var(--shadow)] transition-all"
                 >
-                  <Logo src={m.logo} abbr={m.abbr} color={m.brandColor} size={36} />
+                  <span className="relative shrink-0">
+                    <Logo src={m.logo} abbr={m.abbr} color={m.brandColor} size={36} />
+                    {/* On hover, a pencil overlay signals the logo/row is editable. */}
+                    <span className="absolute inset-0 grid place-items-center rounded-[8px] bg-ink/55 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="#fff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+                      </svg>
+                    </span>
+                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-semibold text-ink truncate">{m.shortName}</div>
                     <div className="text-xs text-muted truncate">{m.city}, {m.state}</div>
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gold-soft shrink-0" style={{ color: "var(--gold-deep)" }}>Change</span>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-gold-soft text-gold-deep shrink-0 group-hover:bg-gold group-hover:text-white transition-colors">
+                    <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all">
+                      <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+                    </svg>
+                    Change
+                  </span>
                 </button>
               ) : (
                 <input
@@ -218,6 +233,10 @@ function ScorecardInner() {
             </div>
           </Card>
         </div>
+      </div>
+
+      <div className="no-print">
+        <ScorecardGraphic active={sm} scored={scored} selectedBeds={totalBeds} selectedRevenue={totalRevenue} />
       </div>
 
       <Card className="print-full">

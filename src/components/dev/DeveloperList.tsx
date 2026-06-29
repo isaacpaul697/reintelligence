@@ -10,7 +10,7 @@ export function DeveloperList({ city, developers }: { city: string; developers: 
       {developers.map((d, i) => (
         <Link
           key={d.slug}
-          href={`/development/developer/${city}/${d.slug}`}
+          href={`/developer/${city}/${d.slug}`}
           className="flex items-center gap-3 bg-surface border border-line rounded-[var(--radius-card)] p-4 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5 transition-all"
         >
           <span className="text-sm font-semibold text-muted-2 w-5 num">{i + 1}</span>

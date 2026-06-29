@@ -20,15 +20,21 @@ export interface CityKpis {
   byType: Record<PropertyType, number>;
   avgDurationDays: number | null;
   withDeclaredValue: number;
+  /** How many rows carried a usable unit count (for honesty notes). */
+  withUnits: number;
+  /** Most recent issue date seen (ISO yyyy-mm-dd), for the data-vintage note. */
+  latestDate: string | null;
 }
 
 export function cityKpis(devs: Development[], costMultiplier: number): CityKpis {
   const byType = emptyByType();
-  let totalUnits = 0, declared = 0, modeled = 0, withDeclared = 0;
+  let totalUnits = 0, declared = 0, modeled = 0, withDeclared = 0, withUnits = 0;
   let durSum = 0, durLiveCount = 0;
+  let latestDate: string | null = null;
   for (const d of devs) {
     byType[d.type]++;
     totalUnits += d.units ?? 0;
+    if (d.units != null && d.units > 0) withUnits++;
     const ec = economics(d, costMultiplier);
     if (d.declaredValue != null) {
       declared += d.declaredValue;
@@ -39,6 +45,8 @@ export function cityKpis(devs: Development[], costMultiplier: number): CityKpis 
       durSum += ec.durationDays.value;
       durLiveCount++;
     }
+    // ISO dates compare lexicographically, so a plain string max works.
+    if (d.issueDate && (!latestDate || d.issueDate > latestDate)) latestDate = d.issueDate;
   }
   return {
     count: devs.length,
@@ -48,6 +56,8 @@ export function cityKpis(devs: Development[], costMultiplier: number): CityKpis 
     byType,
     avgDurationDays: durLiveCount ? durSum / durLiveCount : null,
     withDeclaredValue: withDeclared,
+    withUnits,
+    latestDate,
   };
 }
 

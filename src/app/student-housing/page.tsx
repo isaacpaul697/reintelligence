@@ -127,7 +127,7 @@ export default function Home() {
             <Link href="/student-housing/markets" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-ink bg-surface-2 border border-line hover:border-line-strong transition-colors">
               Browse all markets
             </Link>
-            <Link href="/student-housing/about" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-ink-soft hover:text-ink transition-colors">
+            <Link href="/about" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-ink-soft hover:text-ink transition-colors">
               How it works →
             </Link>
           </div>
@@ -231,7 +231,7 @@ export default function Home() {
 
       {/* ── How it works ───────────────────────────────────── */}
       <Card>
-        <SectionTitle sub="From raw public data to a single acquisition score" right={<Link href="/student-housing/about" className="text-xs font-semibold text-gold-deep hover:underline">Full methodology →</Link>}>
+        <SectionTitle sub="From raw public data to a single acquisition score" right={<Link href="/about" className="text-xs font-semibold text-gold-deep hover:underline">Full methodology →</Link>}>
           How Campus Capital works
         </SectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -277,7 +277,7 @@ export default function Home() {
             Built to look and behave like a real commercial real-estate acquisitions desk. Every number is live or transparently modeled. Nothing here is investment advice.
           </div>
         </div>
-        <Link href="/student-housing/about" className="px-5 h-10 inline-flex items-center rounded-full text-sm font-semibold text-white shrink-0" style={{ background: "var(--gold)" }}>
+        <Link href="/about" className="px-5 h-10 inline-flex items-center rounded-full text-sm font-semibold text-white shrink-0" style={{ background: "var(--gold)" }}>
           About this build
         </Link>
       </Card>

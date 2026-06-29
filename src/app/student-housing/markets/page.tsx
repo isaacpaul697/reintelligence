@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useScoredMarkets } from "@/lib/compute";
 import { Card, LabelChip, Logo, Spinner, StateBlock } from "@/components/ui";
 import { HeadlinesModal } from "@/components/HeadlinesModal";
+import { MarketsGraphic } from "@/components/HousingGraphics";
 import { fmtNum, fmtPct } from "@/lib/scoring";
 import { usePersistedState } from "@/lib/usePersistedState";
 import type { LiveMarket } from "@/lib/types";
@@ -52,6 +53,8 @@ export default function MarketsPage() {
       </div>
 
       {loading ? <Spinner /> : error ? <StateBlock title="Live feed unavailable" note="Could not reach the data sources. Refresh to retry." /> : (
+        <>
+        <MarketsGraphic scored={scored} />
         <Card pad={false} className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -106,6 +109,7 @@ export default function MarketsPage() {
             </table>
           </div>
         </Card>
+        </>
       )}
 
       {headlinesFor && (

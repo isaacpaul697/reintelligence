@@ -16,9 +16,9 @@ export default function StudentHousingLayout({ children }: Readonly<{ children: 
             <MobileNavProvider>
               <div className="flex min-h-screen">
                 <AppBackground />
-                <Sidebar section="housing" />
+                <Sidebar />
                 <div className="flex-1 min-w-0 flex flex-col">
-                  <Topbar section="housing" />
+                  <Topbar />
                   <main className="flex-1 px-4 py-5 sm:p-6 md:p-8 max-w-[1280px] w-full mx-auto">{children}</main>
                 </div>
               </div>

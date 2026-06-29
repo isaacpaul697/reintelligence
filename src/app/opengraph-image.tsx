@@ -4,7 +4,7 @@ import { ImageResponse } from "next/og";
 // tags from this file. Recreates the hub landing hero (skyline + headline) so
 // the shared card matches the live product. Rendered as vectors at 1200x630.
 export const alt =
-  "Real Estate Intelligence — one workspace for the deals you buy and the supply you watch";
+  "Real Estate Intelligence: one workspace for the deals you buy and the supply you watch";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

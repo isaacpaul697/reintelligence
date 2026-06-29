@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useScoredMarkets } from "@/lib/compute";
 import { Card, LabelChip, Logo, Spinner, StateBlock } from "@/components/ui";
 import { ScoreRing } from "@/components/charts";
+import { Top10Graphic } from "@/components/HousingGraphics";
 import { fmtNum, fmtPct } from "@/lib/scoring";
 
 export default function Top10Page() {
@@ -29,6 +30,8 @@ export default function Top10Page() {
         <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">Top 10 Student Housing Markets</h1>
         <p className="text-sm text-muted mt-1">Ranked by the weighted acquisition score. Adjust the model weights in Settings to re-rank.</p>
       </div>
+
+      <Top10Graphic top={top} />
 
       <div className="flex flex-col gap-3">
         {top.map((m, i) => (

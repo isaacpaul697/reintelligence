@@ -7,6 +7,7 @@ import {
   type UwAssumptions,
   type UwInputs,
   type UwLine,
+  type UwResult,
 } from "@/lib/underwriting";
 import { ProvenanceTag } from "./ui";
 
@@ -29,6 +30,77 @@ function fmtLine(l: UwLine): string {
     return `${l.value.toFixed(2)}%`;
   }
   return fmtUSD(l.value);
+}
+
+/** Find the value of a result line by its label (for the at-a-glance chart). */
+function lineValue(lines: UwLine[], label: string): number | null {
+  return lines.find((l) => l.label === label)?.value ?? null;
+}
+
+/** Compact ranked-bar chart of the model's headline dollar figures. */
+function MoneyBars({ items }: { items: { label: string; value: number; color: string }[] }) {
+  const max = Math.max(1, ...items.map((i) => Math.abs(i.value)));
+  return (
+    <div className="flex flex-col gap-2">
+      {items.map((it) => (
+        <div key={it.label} className="flex items-center gap-3">
+          <span className="text-[11px] text-ink-soft w-28 shrink-0 truncate">{it.label}</span>
+          <div className="flex-1 h-2.5 bg-surface rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${Math.max(3, (Math.abs(it.value) / max) * 100)}%`, background: it.color }}
+            />
+          </div>
+          <span className="num text-[11px] text-ink w-14 text-right shrink-0">{fmtUSD(it.value)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Escape a CSV field, quoting when it contains a comma, quote, or newline. */
+function csvField(s: string): string {
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+/** Build a flat pro-forma spreadsheet (CSV, opens in Excel) from the result. */
+function buildCsv(result: UwResult, title: string): string {
+  const a = result.assumptions;
+  const rows: string[][] = [[title], [], ["Assumptions", "Value"]];
+  rows.push(["Cap rate (%)", String(a.capRatePct)]);
+  rows.push(["Expense ratio (%)", String(a.expenseRatioPct)]);
+  rows.push(["Vacancy (%)", String(a.vacancyPct)]);
+  rows.push(["Loan-to-value (%)", String(a.ltvPct)]);
+  rows.push(["Purchase price ($)", String(Math.round(a.purchasePrice))]);
+
+  const section = (heading: string, lines: UwLine[]) => {
+    rows.push([], [heading, "Value", "Basis"]);
+    for (const l of lines) {
+      const val = l.value == null ? "n/a" : l.unit === "pct" ? l.value.toFixed(2) : String(Math.round(l.value));
+      rows.push([l.label, val, l.note ?? ""]);
+    }
+  };
+  section("Income statement (annual)", result.income);
+  section("Valuation", result.valuation);
+  section("Return metrics", result.returns);
+  section("Financing", result.financing);
+  rows.push([], ["Basis", result.basis]);
+
+  return rows.map((r) => r.map(csvField).join(",")).join("\n");
+}
+
+/** Download the pro-forma CSV in the browser (dependency-free). */
+function downloadCsv(result: UwResult, title: string) {
+  const csv = buildCsv(result, title);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${title.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-proforma.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function Lever({
@@ -112,6 +184,15 @@ export default function UnderwritingPanel({
 
   const value = result.valuation[0];
 
+  // Headline dollar figures for the at-a-glance bar chart.
+  const chartItems = [
+    { label: "Estimated value", value: lineValue(result.valuation, "Estimated value"), color: "var(--gold)" },
+    { label: "All-in cost", value: lineValue(result.valuation, "All-in development cost"), color: "#b5552c" },
+    { label: "Loan", value: lineValue(result.financing, "Loan amount"), color: "var(--chart-1)" },
+    { label: "Equity", value: lineValue(result.financing, "Equity required"), color: "var(--chart-3)" },
+    { label: "NOI", value: lineValue(result.income, "Net operating income"), color: "#3f7a4f" },
+  ].filter((x): x is { label: string; value: number; color: string } => x.value != null && x.value !== 0);
+
   if (!result.available) {
     return (
       <div className="bg-surface-2 border border-line rounded-[var(--radius-card)] p-4">
@@ -138,7 +219,18 @@ export default function UnderwritingPanel({
           </div>
           <div className="text-[10px] text-muted mt-1">Estimated value</div>
         </div>
-        <ProvenanceTag p="estimated" />
+        <div className="flex flex-col items-end gap-2">
+          <ProvenanceTag p="estimated" />
+          <button
+            onClick={() => downloadCsv(result, title)}
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gold-deep hover:text-ink px-2.5 py-1 rounded-full bg-gold-soft hover:bg-gold/30 transition-colors"
+          >
+            <svg viewBox="0 0 24 24" width={13} height={13} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3v12M8 11l4 4 4-4M5 21h14" />
+            </svg>
+            Export to Excel
+          </button>
+        </div>
       </div>
 
       {/* Adjustable levers */}
@@ -169,6 +261,16 @@ export default function UnderwritingPanel({
         >
           Reset to auto
         </button>
+      )}
+
+      {/* Deal at a glance */}
+      {chartItems.length > 0 && (
+        <div className="border-t border-line pt-2.5">
+          <div className="text-[10px] uppercase tracking-wide text-muted-2 font-semibold mb-2">
+            Deal at a glance
+          </div>
+          <MoneyBars items={chartItems} />
+        </div>
       )}
 
       {/* Income statement */}

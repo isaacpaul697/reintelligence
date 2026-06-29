@@ -8,6 +8,7 @@ import { fmtNum } from "@/lib/scoring";
 import { usePersistedState } from "@/lib/usePersistedState";
 import { useWatchlist } from "@/lib/watchlist";
 import ApartmentDrawer from "@/components/ApartmentDrawer";
+import { ApartmentsGraphic } from "@/components/HousingGraphics";
 import type { Apartment } from "@/lib/types";
 
 const fmtMoney = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
@@ -107,6 +108,8 @@ export default function ApartmentsPage() {
       ) : apartments.length === 0 ? (
         <StateBlock title="No apartments found" note="OpenStreetMap has no named apartment buildings within 3 mi of this campus." />
       ) : (
+        <>
+        <ApartmentsGraphic apartments={apartments} label={market?.shortName ?? "campus"} />
         <Card pad={false}>
           <div className="p-5 pb-3">
             <SectionTitle sub={`${apartments.length} named apartment buildings within 3 mi · click a row to dive deeper`}>
@@ -173,6 +176,7 @@ export default function ApartmentsPage() {
             Beds estimated from OSM building data (units × ~2 beds/unit). Student housing leases by the bed: revenue = estimated beds × real per-bed rent (HUD FMR / Census, regional fallback) × 12.
           </div>
         </Card>
+        </>
       )}
 
       <ApartmentDrawer

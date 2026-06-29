@@ -4,7 +4,7 @@ import type { Development, Metric, PropertyType } from "./types";
    Modeled economics. Every value returned here is either pulled live
    (declared valuation / recorded dates) or modeled from live inputs and
    tagged provenance:"estimated". All constants below are documented
-   modeling assumptions surfaced on the Methodology page — not data points.
+   modeling assumptions surfaced on the Methodology page, not data points.
    ================================================================== */
 
 /** 2019-base national new-construction hard cost, $/sqft (RSMeans-style). */
@@ -75,14 +75,14 @@ export function estimateCost(dev: Development, costMultiplier: number): Metric {
   return m(null, "estimated", "No sqft, unit count, or declared valuation available");
 }
 
-/** Land cost — no free national feed; modeled as a city land-share of dev cost. */
+/** Land cost: no free national feed; modeled as a city land-share of dev cost. */
 export function estimateLand(dev: Development, costMetric: Metric): Metric {
   const share = CITY_LAND_SHARE[dev.city] ?? 0.25;
   if (costMetric.value == null) return m(null, "estimated", "Depends on development cost (unavailable)");
   return m(costMetric.value * share, "estimated", `${Math.round(share * 100)}% land share (city infill assumption) × development cost`);
 }
 
-/** Development duration — live from issue→completion dates, else typical-by-type. */
+/** Development duration: live from issue to completion dates, else typical-by-type. */
 export function estimateDuration(dev: Development): Metric {
   if (dev.issueDate && dev.completeDate) {
     const days = (Date.parse(dev.completeDate) - Date.parse(dev.issueDate)) / 86_400_000;
@@ -102,7 +102,7 @@ export function economics(dev: Development, costMultiplier: number): DevEconomic
   return { cost, land: estimateLand(dev, cost), durationDays: estimateDuration(dev) };
 }
 
-/** Methodology registry — drives the /methodology page. */
+/** Methodology registry: drives the methodology section of the /about page. */
 export const METHODOLOGY: { metric: string; provenance: "live" | "estimated"; formula: string; source: string }[] = [
   { metric: "Declared development value", provenance: "live", formula: "As reported on the building permit", source: "City open-data portal (Socrata)" },
   { metric: "Development cost (no declared value)", provenance: "estimated", formula: "sqft × base $/sqft(type) × city cost factor × FRED cost multiplier; or units × $/unit when sqft absent", source: "Permit sqft/units + RSMeans-style base + FRED WPUSI012011" },
@@ -117,6 +117,7 @@ export const METHODOLOGY: { metric: string; provenance: "live" | "estimated"; fo
   { metric: "Underwriting cap rate", provenance: "estimated", formula: "live 30-yr mortgage rate + asset-class risk spread, clamped 4–11%", source: "FRED MORTGAGE30US + modeled spread" },
   { metric: "Net operating income", provenance: "estimated", formula: "gross rent × (1 − vacancy) × (1 − expense ratio); expense ratio & vacancy modeled by type", source: "Live/modeled rent + modeled operating assumptions" },
   { metric: "Stabilized rent (development underwriting)", provenance: "estimated", formula: "units × modeled $/unit/mo × 12, or floor area × modeled $/sqft/yr when unit count is absent", source: "Permit units / floor area + modeled rents" },
+  { metric: "Local market adjustment (Underwriting Lab)", provenance: "estimated", formula: "modeled construction cost × city cost index and modeled rent × city rent index (US avg = 1.00)", source: "Modeled city cost/rent multipliers (RSMeans-style)" },
   { metric: "Estimated value (income approach)", provenance: "estimated", formula: "net operating income / cap rate", source: "Modeled NOI + cap-rate anchor" },
   { metric: "Financing (debt service, DSCR, cash-on-cash)", provenance: "estimated", formula: "30-yr amortizing payment on (price × LTV) at the live mortgage rate; DSCR = NOI / debt service", source: "FRED MORTGAGE30US (rate, live) + modeled LTV" },
 ];
