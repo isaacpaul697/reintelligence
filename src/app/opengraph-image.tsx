@@ -16,29 +16,28 @@ const GOLD_DEEP = "#6d5418";
 const INK = "#26231d";
 const INK_SOFT = "#574f43";
 const LINE_STRONG = "#d6ccb9";
-const MUTED_2 = "#b1a994";
 
-/** Build a static (non-animated) version of the HubHero skyline as SVG markup. */
+/** Build the social-card illustration: a skyline that doubles as a rising bar
+ *  chart, with a live data trend line, plotted points, and a map pin. Static
+ *  SVG markup (the OG renderer cannot animate). */
 function skylineSvg(): string {
   const BASE = 300;
+  // Buildings that read as an upward bar chart (one dip for realism).
   const TOWERS = [
-    { x: 34, w: 46, top: 206 },
-    { x: 90, w: 54, top: 150 },
-    { x: 154, w: 50, top: 112 },
-    { x: 214, w: 60, top: 66 },
-    { x: 284, w: 46, top: 174 },
-  ];
-  const CARS = [
-    { x: 150, color: "#b5462f" },
-    { x: 248, color: "#3a6ea5" },
-    { x: 330, color: "#2f7d6b" },
+    { x: 26, w: 42, top: 232 },
+    { x: 80, w: 42, top: 200 },
+    { x: 134, w: 42, top: 168 },
+    { x: 188, w: 42, top: 128 },
+    { x: 242, w: 42, top: 150 },
+    { x: 296, w: 42, top: 100 },
+    { x: 350, w: 42, top: 62 },
   ];
 
   let windows = "";
   let towers = "";
   for (const t of TOWERS) {
     towers += `<rect x="${t.x}" y="${t.top}" width="${t.w}" height="${BASE - t.top}" rx="3" fill="url(#t)"/>`;
-    const cols = t.w > 50 ? 3 : 2;
+    const cols = 2;
     const colGap = t.w / (cols + 1);
     for (let y = t.top + 16; y < BASE - 12; y += 22) {
       for (let ci = 0; ci < cols; ci++) {
@@ -48,31 +47,26 @@ function skylineSvg(): string {
     }
   }
 
-  const cars = CARS.map(
-    (c) =>
-      `<g transform="translate(${c.x},${BASE})">` +
-      `<circle cx="-6" cy="-2.2" r="2.3" fill="${INK}"/>` +
-      `<circle cx="6" cy="-2.2" r="2.3" fill="${INK}"/>` +
-      `<rect x="-11" y="-9" width="22" height="6.5" rx="2.2" fill="${c.color}"/>` +
-      `<rect x="-5.5" y="-13" width="11" height="4.5" rx="1.8" fill="${c.color}"/>` +
-      `<rect x="-3.8" y="-12.2" width="7.5" height="3" rx="1" fill="#fff" fill-opacity="0.7"/>` +
-      `</g>`,
-  ).join("");
+  // Trend line + plotted points across the building tops.
+  const pts = TOWERS.map((t) => ({ x: t.x + t.w / 2, y: t.top - 14 }));
+  const linePath = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x} ${p.y}`).join(" ");
+  const areaPath =
+    `${linePath} L${pts[pts.length - 1].x} ${BASE} L${pts[0].x} ${BASE} Z`;
+  const dots = pts
+    .map(
+      (p) =>
+        `<circle cx="${p.x}" cy="${p.y}" r="5" fill="${GOLD_BRIGHT}" stroke="#fff" stroke-width="2"/>`,
+    )
+    .join("");
 
-  const plane =
-    `<g transform="translate(118,108)" fill="#fff" stroke="${MUTED_2}" stroke-width="0.5" stroke-linejoin="round">` +
-    `<line x1="-24" y1="-1" x2="-58" y2="-1" stroke="#fff" stroke-width="1.4" stroke-dasharray="1 6" opacity="0.5"/>` +
-    `<path d="M-20 -2 L-28 -13 L-14 -2.5 Z"/>` +
-    `<path d="M-18 0 L-27 -4 L-15 0.5 Z"/>` +
-    `<path d="M25 -0.5 C 14 -4, -12 -4.5, -25 -2.5 C -14 2.5, 14 3, 25 -0.5 Z"/>` +
+  // Map pin floating above the early (low) part of the chart.
+  const pin =
+    `<g transform="translate(96,150)">` +
+    `<circle cx="0" cy="-24" r="22" fill="${GOLD}" fill-opacity="0.10"/>` +
+    `<circle cx="0" cy="-24" r="15" fill="${GOLD}" fill-opacity="0.16"/>` +
+    `<path d="M0 0 L-9 -17 A11 11 0 1 1 9 -17 Z" fill="${GOLD}"/>` +
+    `<circle cx="0" cy="-25" r="4.4" fill="#fff"/>` +
     `</g>`;
-
-  const crane =
-    `<rect x="343" y="70" width="6" height="230" rx="2" fill="${INK_SOFT}"/>` +
-    `<rect x="300" y="64" width="110" height="6" rx="3" fill="${INK_SOFT}"/>` +
-    `<rect x="338" y="52" width="16" height="14" rx="2" fill="${INK_SOFT}"/>` +
-    `<rect x="391.25" y="70" width="1.5" height="48" fill="${INK_SOFT}"/>` +
-    `<rect x="386" y="118" width="12" height="9" rx="1.5" fill="${GOLD}"/>`;
 
   return (
     `<svg width="420" height="340" viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg">` +
@@ -81,12 +75,13 @@ function skylineSvg(): string {
     `<linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${GOLD}" stop-opacity="0.16"/><stop offset="1" stop-color="${GOLD}" stop-opacity="0"/></linearGradient>` +
     `</defs>` +
     `<rect x="0" y="40" width="420" height="262" rx="20" fill="url(#g)"/>` +
-    plane +
+    `<path d="${areaPath}" fill="url(#g)"/>` +
     towers +
     windows +
-    crane +
+    `<path d="${linePath}" fill="none" stroke="${INK_SOFT}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` +
+    dots +
+    pin +
     `<rect x="0" y="${BASE}" width="420" height="3" rx="1.5" fill="${LINE_STRONG}"/>` +
-    cars +
     `</svg>`
   );
 }
@@ -111,7 +106,7 @@ export default function OpengraphImage() {
         }}
       >
         {/* left: text */}
-        <div style={{ display: "flex", flexDirection: "column", width: 620 }}>
+        <div style={{ display: "flex", flexDirection: "column", width: 560, flexShrink: 0 }}>
           <div
             style={{
               fontSize: 22,
@@ -127,8 +122,8 @@ export default function OpengraphImage() {
           </div>
           <div
             style={{
-              fontSize: 60,
-              lineHeight: 1.04,
+              fontSize: 52,
+              lineHeight: 1.06,
               fontWeight: 600,
               color: INK,
             }}
@@ -137,12 +132,12 @@ export default function OpengraphImage() {
           </div>
           <div
             style={{
-              fontSize: 25,
+              fontSize: 24,
               lineHeight: 1.35,
               color: INK_SOFT,
               marginTop: 24,
               fontFamily: "Arial, sans-serif",
-              maxWidth: 560,
+              maxWidth: 520,
             }}
           >
             Two intelligence suites, one source of truth. Every number traces to
@@ -151,9 +146,9 @@ export default function OpengraphImage() {
         </div>
 
         {/* right: skyline illustration */}
-        <div style={{ display: "flex", flex: 1, justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", flex: 1, justifyContent: "flex-end", paddingLeft: 32 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={skyline} width={460} height={372} alt="" />
+          <img src={skyline} width={400} height={324} alt="" />
         </div>
       </div>
     ),
