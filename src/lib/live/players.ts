@@ -21,7 +21,7 @@ export const STUDENT_HOUSING_PLAYERS: SectorPlayersConfig = {
   newsQuery:
     'student housing ("purpose-built" OR university OR "off-campus" OR "student accommodation") (acquisition OR development OR REIT OR "rent growth" OR occupancy OR enrollment)',
   playersIntro:
-    "Purpose-built student housing has largely moved into private hands, so this roster blends the sector's defining REIT with the institutional owners that acquired it and the apartment REITs most exposed to university metros. Recent activity is pulled live from each firm's SEC filings.",
+    "Purpose-built student housing has largely moved into private hands, so this roster blends the sector's defining REIT and the institutional owners that acquired it with the largest privately held student-housing developers, owners, and managers. Recent activity for public filers is pulled live from SEC filings.",
   companies: [
     {
       name: "Greystar",
@@ -71,6 +71,62 @@ export const STUDENT_HOUSING_PLAYERS: SectorPlayersConfig = {
       cik: 1466085,
       note: "Sun Belt apartment REIT concentrated in college-town and high-growth markets.",
       site: "irtliving.com",
+    },
+    {
+      name: "Landmark Properties",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "One of the largest privately held student-housing developers and owners.",
+      site: "landmarkproperties.com",
+    },
+    {
+      name: "Core Spaces",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Privately held developer-operator of premium student and build-to-rent housing.",
+      site: "corespaces.com",
+    },
+    {
+      name: "The Scion Group",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Largest privately held student-housing owner-operator in the US.",
+      site: "thesciongroup.com",
+    },
+    {
+      name: "Asset Living",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "One of the largest third-party managers of student and conventional housing.",
+      site: "assetliving.com",
+    },
+    {
+      name: "Cardinal Group Companies",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Privately held student-housing investor, developer, and manager.",
+      site: "cardinalgroup.com",
+    },
+    {
+      name: "Harrison Street",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Alternative real-asset manager and major institutional student-housing investor.",
+      site: "harrisonst.com",
+    },
+    {
+      name: "Campus Advantage",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Privately held student-housing owner, operator, and manager.",
+      site: "campusadv.com",
+    },
+    {
+      name: "CA Student Living",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Student-housing platform of CA Ventures, a private real-asset manager.",
+      site: "ca-ventures.com",
     },
   ],
 };

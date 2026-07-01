@@ -42,7 +42,7 @@ export function SectorPlayers({
         <div className="grid sm:grid-cols-2 gap-3">
           {rows.map(({ company, filings }) => (
             <button
-              key={company.ticker + company.cik}
+              key={company.name}
               type="button"
               onClick={() => setSelected(company)}
               className="text-left bg-surface-2 border border-line rounded-[var(--radius-card)] p-4 transition-all hover:border-line-strong hover:shadow-[var(--shadow)] focus:outline-none focus:ring-2"

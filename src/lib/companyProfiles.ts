@@ -292,6 +292,470 @@ export const COMPANY_REFERENCE: Record<string, CompanyReference> = {
       { label: "CoStar - Greystar takes over top spot as nation's largest apartment owner", url: "https://www.costar.com/article/329788865/greystar-takes-over-top-spot-from-maa-as-nations-largest-apartment-owner" },
     ],
   },
+
+  // ── Privately held industrial developers ───────────────────────────
+  "PANATTONI DEVELOPMENT": {
+    ownership: "Privately held",
+    founded: "1986",
+    headquarters: "Newport Beach, California",
+    tagline: "One of the largest privately held industrial real estate developers in the world.",
+    overview: [
+      "Panattoni Development Company is a privately held, full-service industrial, office, and build-to-suit developer founded by Carl Panattoni. It is consistently ranked among the largest industrial developers globally, delivering logistics and distribution space across North America and Europe.",
+      "Because it is privately held, Panattoni does not file with the SEC; the figures a user would otherwise see live are unavailable, so the drawer relies on reference facts and a live news feed.",
+    ],
+    highlights: [
+      "Develops speculative and build-to-suit logistics, distribution, and manufacturing facilities.",
+      "Active across the United States, Canada, and multiple European markets.",
+      "One of the most prolific privately held industrial developers by annual square footage.",
+    ],
+    sources: [
+      { label: "Panattoni - Company website", url: "https://www.panattoni.com" },
+    ],
+  },
+  HILLWOOD: {
+    ownership: "Privately held (Perot family)",
+    founded: "1988",
+    headquarters: "Dallas, Texas",
+    tagline: "A Perot-family industrial and mixed-use developer, master-developer of AllianceTexas.",
+    overview: [
+      "Hillwood, founded by Ross Perot Jr., is a privately held real estate developer and investor best known as the master-developer of AllianceTexas, one of the largest master-planned developments in the United States.",
+      "Its industrial platform develops and owns logistics and distribution real estate nationally, alongside residential and mixed-use projects.",
+    ],
+    highlights: [
+      "Master-developer of the 27,000-acre AllianceTexas development north of Fort Worth.",
+      "National developer of logistics, distribution, and manufacturing facilities.",
+      "Part of the Perot family's Hillwood group of companies.",
+    ],
+    sources: [
+      { label: "Hillwood - Company website", url: "https://www.hillwood.com" },
+    ],
+  },
+  "BRIDGE INDUSTRIAL": {
+    ownership: "Privately held",
+    founded: "2000",
+    headquarters: "Chicago, Illinois",
+    tagline: "A privately held developer and operator of infill industrial and logistics real estate.",
+    overview: [
+      "Bridge Industrial is a privately held, vertically integrated real estate operating company focused on the acquisition and development of industrial and logistics properties in supply-constrained, infill markets.",
+      "It concentrates on major coastal and gateway metros where land for new logistics space is scarce.",
+    ],
+    highlights: [
+      "Focused on infill industrial in high-barrier US markets and select international cities.",
+      "Vertically integrated across acquisitions, development, and operations.",
+      "Targets last-mile and regional distribution demand.",
+    ],
+    sources: [
+      { label: "Bridge Industrial - Company website", url: "https://www.bridgeindustrial.com" },
+    ],
+  },
+  "DERMODY PROPERTIES": {
+    ownership: "Privately held",
+    founded: "1960",
+    headquarters: "Reno, Nevada",
+    tagline: "A privately held national developer, acquirer, and operator of logistics real estate.",
+    overview: [
+      "Dermody Properties is a privately held industrial real estate investment, development, and management company that has operated for more than six decades, focused on logistics and distribution facilities.",
+      "It develops and acquires modern logistics space in major distribution markets across the United States.",
+    ],
+    highlights: [
+      "Long-tenured, family-founded national logistics developer.",
+      "Develops and operates modern distribution and e-commerce fulfillment facilities.",
+      "Active across major US logistics corridors.",
+    ],
+    sources: [
+      { label: "Dermody Properties - Company website", url: "https://www.dermody.com" },
+    ],
+  },
+
+  // ── Privately held homebuilder ─────────────────────────────────────
+  "DAVID WEEKLEY HOMES": {
+    ownership: "Privately held",
+    founded: "1976",
+    headquarters: "Houston, Texas",
+    tagline: "The largest privately held homebuilder in the United States.",
+    overview: [
+      "David Weekley Homes is a privately held national homebuilder founded in Houston in 1976. It builds single-family homes across a broad range of price points and is regularly cited as the largest privately held builder in the country.",
+      "The company is known for its design-focused product and its recognition as a top workplace in the homebuilding industry.",
+    ],
+    highlights: [
+      "Builds single-family homes across many US growth markets, concentrated in the Sun Belt.",
+      "Frequently ranked the largest privately held US homebuilder by closings.",
+      "Repeatedly recognized as a top workplace among national builders.",
+    ],
+    sources: [
+      { label: "David Weekley Homes - Company website", url: "https://www.davidweekleyhomes.com" },
+    ],
+  },
+
+  // ── Privately held multifamily owner-operators ─────────────────────
+  CORTLAND: {
+    ownership: "Privately held",
+    founded: "2005",
+    headquarters: "Atlanta, Georgia",
+    tagline: "A privately held, vertically integrated multifamily owner-operator concentrated in the Sun Belt.",
+    overview: [
+      "Cortland is a privately held, vertically integrated multifamily investment, development, and management firm. It acquires, renovates, builds, and operates apartment communities, handling design, construction, and property management in-house.",
+      "It is one of the largest apartment owners in the United States, with a portfolio concentrated in high-growth Sun Belt markets.",
+    ],
+    highlights: [
+      "Vertically integrated across investment, development, construction, and management.",
+      "Portfolio concentrated in Sun Belt growth markets, with a global corporate footprint.",
+      "Consistently ranked among the largest US apartment owners on the NMHC 50.",
+    ],
+    sources: [
+      { label: "Cortland - Company website", url: "https://cortland.com" },
+    ],
+  },
+  "MORGAN PROPERTIES": {
+    ownership: "Privately held",
+    founded: "1985",
+    headquarters: "King of Prussia, Pennsylvania",
+    tagline: "One of the largest privately held apartment owners in the United States.",
+    overview: [
+      "Morgan Properties is a privately held, family-owned apartment owner and operator founded by Mitchell Morgan. Through aggressive acquisitions it has grown into one of the largest apartment owners in the country.",
+      "The company focuses on acquiring and improving suburban, workforce-oriented apartment communities, primarily across the Mid-Atlantic, Northeast, and Midwest.",
+    ],
+    highlights: [
+      "Among the largest apartment owners in the US on the NMHC 50 owners list.",
+      "Value-add strategy renovating and repositioning suburban communities.",
+      "Family-owned and vertically integrated across acquisitions and management.",
+    ],
+    sources: [
+      { label: "Morgan Properties - Company website", url: "https://www.morganproperties.com" },
+    ],
+  },
+  "LINCOLN PROPERTY COMPANY": {
+    ownership: "Privately held",
+    founded: "1965",
+    headquarters: "Dallas, Texas",
+    tagline: "One of the largest privately held US multifamily developers and managers.",
+    overview: [
+      "Lincoln Property Company is a privately held real estate firm founded in 1965 that develops, manages, and invests in residential and commercial real estate. Its residential arm is one of the largest apartment managers and developers in the United States.",
+      "It operates a large third-party management platform in addition to its owned and developed communities.",
+    ],
+    highlights: [
+      "One of the largest apartment managers and developers in the country.",
+      "National residential platform spanning development, management, and investment.",
+      "Long operating history across US multifamily and commercial real estate.",
+    ],
+    sources: [
+      { label: "Lincoln Property Company - Company website", url: "https://www.lincolnproperty.com" },
+    ],
+  },
+
+  // ── Privately held office / diversified developers ─────────────────
+  HINES: {
+    ownership: "Privately held",
+    founded: "1957",
+    headquarters: "Houston, Texas",
+    tagline: "One of the largest privately held global real estate developers, owners, and managers.",
+    overview: [
+      "Hines is a privately held global real estate investment, development, and management firm founded by Gerald D. Hines in 1957. It is one of the largest privately held real estate organizations in the world, active across offices, residential, industrial, and mixed-use.",
+      "The firm develops and manages landmark office towers and invests on behalf of institutional partners across dozens of countries.",
+    ],
+    highlights: [
+      "Global platform spanning offices, residential, industrial, and mixed-use assets.",
+      "Developer and manager of numerous landmark office towers worldwide.",
+      "Invests and operates across dozens of countries on behalf of institutions.",
+    ],
+    sources: [
+      { label: "Hines - Company website", url: "https://www.hines.com" },
+    ],
+  },
+  "TISHMAN SPEYER": {
+    ownership: "Privately held",
+    founded: "1978",
+    headquarters: "New York, New York",
+    tagline: "A privately held global developer and owner-operator of landmark office and mixed-use assets.",
+    overview: [
+      "Tishman Speyer is a privately held global real estate developer, owner, and operator founded in 1978. It is known for developing and managing landmark commercial properties, including its stewardship of Rockefeller Center.",
+      "The firm operates across major gateway cities in the Americas, Europe, and Asia.",
+    ],
+    highlights: [
+      "Owner-operator of landmark office and mixed-use assets, including Rockefeller Center.",
+      "Active across gateway cities in the Americas, Europe, and Asia.",
+      "Develops office, residential, and life-science space for institutional partners.",
+    ],
+    sources: [
+      { label: "Tishman Speyer - Company website", url: "https://www.tishmanspeyer.com" },
+    ],
+  },
+
+  // ── Privately held retail developer ────────────────────────────────
+  EDENS: {
+    ownership: "Privately held",
+    founded: "1966",
+    headquarters: "Washington, D.C.",
+    tagline: "A privately held developer, owner, and operator of grocery-anchored retail centers.",
+    overview: [
+      "Edens is a privately held retail real estate company that develops, owns, and operates grocery-anchored and mixed-use shopping centers concentrated in primary markets along the East Coast and in Texas and California.",
+      "It focuses on necessity-based, community-oriented retail in dense, high-growth submarkets.",
+    ],
+    highlights: [
+      "Portfolio centered on grocery-anchored, necessity-based retail.",
+      "Concentrated in primary East Coast markets plus Texas and California.",
+      "Emphasis on mixed-use, community-gathering retail places.",
+    ],
+    sources: [
+      { label: "Edens - Company website", url: "https://www.edens.com" },
+    ],
+  },
+
+  // ── Privately held affordable-housing owners & developers ──────────
+  "THE MICHAELS ORGANIZATION": {
+    ownership: "Privately held",
+    founded: "1973",
+    headquarters: "Camden, New Jersey",
+    tagline: "One of the largest privately held affordable and mixed-income housing owners and developers.",
+    overview: [
+      "The Michaels Organization is a privately held, full-service residential real estate company specializing in affordable, mixed-income, military, and student housing. It is one of the largest owners and developers of affordable housing in the United States.",
+      "Its integrated platform spans development, property management, construction, and investment.",
+    ],
+    highlights: [
+      "One of the largest US owners and developers of affordable and mixed-income housing.",
+      "Active in affordable, market-rate, military, and student housing.",
+      "Integrated across development, management, construction, and investment.",
+    ],
+    sources: [
+      { label: "The Michaels Organization - Company website", url: "https://themichaelsorg.com" },
+    ],
+  },
+  WINNCOMPANIES: {
+    ownership: "Privately held",
+    founded: "1971",
+    headquarters: "Boston, Massachusetts",
+    tagline: "The largest manager of affordable and mixed-income housing in the United States.",
+    overview: [
+      "WinnCompanies is a privately held real estate development and management firm founded in 1971. Its management arm, WinnResidential, is the largest manager of affordable and mixed-income apartment housing in the country.",
+      "The firm also develops and preserves affordable, workforce, market-rate, and military housing across many states.",
+    ],
+    highlights: [
+      "Largest US manager of affordable and mixed-income housing.",
+      "Active in affordable, workforce, market-rate, and military housing.",
+      "Develops, preserves, and manages communities across many states.",
+    ],
+    sources: [
+      { label: "WinnCompanies - Company website", url: "https://www.winncompanies.com" },
+    ],
+  },
+  DOMINIUM: {
+    ownership: "Privately held",
+    founded: "1972",
+    headquarters: "Plymouth, Minnesota",
+    tagline: "One of the largest privately held affordable-housing developers, owners, and managers.",
+    overview: [
+      "Dominium is a privately held affordable-housing developer, owner, and manager founded in 1972. It is one of the largest affordable-housing companies in the United States, specializing in the development and long-term operation of income-restricted communities.",
+      "It makes extensive use of the Low-Income Housing Tax Credit (LIHTC) and related financing to develop and preserve affordable apartments.",
+    ],
+    highlights: [
+      "One of the largest US affordable-housing owners and developers.",
+      "Specialist in LIHTC development, acquisition, and preservation.",
+      "Owns and manages a large portfolio of income-restricted communities.",
+    ],
+    sources: [
+      { label: "Dominium - Company website", url: "https://www.dominiumapartments.com" },
+    ],
+  },
+  "NRP GROUP": {
+    ownership: "Privately held",
+    founded: "1994",
+    headquarters: "Cleveland, Ohio",
+    tagline: "A privately held developer, builder, and manager of affordable and market-rate multifamily.",
+    overview: [
+      "The NRP Group is a privately held, vertically integrated multifamily developer, builder, and manager founded in 1994. It develops affordable, workforce, and market-rate apartment communities across the United States.",
+      "Its integrated platform combines development, construction, and property management in-house.",
+    ],
+    highlights: [
+      "Vertically integrated across development, construction, and management.",
+      "Develops affordable, workforce, and market-rate multifamily.",
+      "Consistently ranked among the most active US affordable-housing developers.",
+    ],
+    sources: [
+      { label: "The NRP Group - Company website", url: "https://www.nrpgroup.com" },
+    ],
+  },
+  "MCCORMACK BARON SALAZAR": {
+    ownership: "Privately held",
+    founded: "1973",
+    headquarters: "St. Louis, Missouri",
+    tagline: "A privately held developer of mixed-income and affordable urban communities.",
+    overview: [
+      "McCormack Baron Salazar is a privately held developer, manager, and asset manager of economically integrated urban neighborhoods, founded in 1973. It is one of the nation's leading developers of mixed-income and affordable housing.",
+      "The firm specializes in revitalizing distressed urban areas through mixed-income communities, often via public-private partnerships.",
+    ],
+    highlights: [
+      "A leading US developer of mixed-income and affordable urban housing.",
+      "Focuses on revitalizing distressed neighborhoods through public-private partnerships.",
+      "Integrated across development, property management, and asset management.",
+    ],
+    sources: [
+      { label: "McCormack Baron Salazar - Company website", url: "https://www.mccormackbaron.com" },
+    ],
+  },
+  "RELATED AFFORDABLE": {
+    ownership: "Privately held (Related Companies)",
+    founded: "1972",
+    headquarters: "New York, New York",
+    tagline: "The affordable-housing arm of Related Companies and a large preservation owner-developer.",
+    overview: [
+      "Related Affordable is the affordable-housing division of Related Companies, one of the largest privately held real estate firms in the United States. It develops, acquires, and preserves affordable and mixed-income housing nationwide.",
+      "The platform is a major owner and preserver of affordable apartments, extending the affordability of at-risk communities.",
+    ],
+    highlights: [
+      "Affordable-housing arm of Related Companies, a major private real estate firm.",
+      "Develops, acquires, and preserves affordable and mixed-income housing nationwide.",
+      "One of the larger owners of affordable apartments in the country.",
+    ],
+    sources: [
+      { label: "Related Companies - Company website", url: "https://www.related.com" },
+    ],
+  },
+
+  // ── Privately held student-housing platforms ───────────────────────
+  "LANDMARK PROPERTIES": {
+    ownership: "Privately held",
+    founded: "2004",
+    headquarters: "Athens, Georgia",
+    tagline: "One of the largest privately held student-housing developers, owners, and managers.",
+    overview: [
+      "Landmark Properties is a privately held, vertically integrated real estate firm founded in 2004 that specializes in purpose-built student housing. It develops, builds, owns, and manages student communities at universities nationwide.",
+      "It has become one of the largest student-housing developers and operators in the country, and has expanded into build-to-rent housing.",
+    ],
+    highlights: [
+      "Among the largest US student-housing developers and operators.",
+      "Vertically integrated across development, construction, and management.",
+      "Operates the Legacy and The Retreat student-housing brands and a build-to-rent platform.",
+    ],
+    sources: [
+      { label: "Landmark Properties - Company website", url: "https://www.landmarkproperties.com" },
+    ],
+  },
+  "CORE SPACES": {
+    ownership: "Privately held",
+    founded: "2010",
+    headquarters: "Chicago, Illinois",
+    tagline: "A privately held developer-operator of premium student and build-to-rent housing.",
+    overview: [
+      "Core Spaces is a privately held, vertically integrated real estate company founded in 2010 that develops, acquires, and manages premium student housing and build-to-rent communities.",
+      "It is known for high-amenity student communities under the Hub and oLiv brands at major universities.",
+    ],
+    highlights: [
+      "Develops and operates high-amenity student housing under the Hub and oLiv brands.",
+      "Vertically integrated across development, acquisitions, and management.",
+      "Growing build-to-rent single-family platform alongside student housing.",
+    ],
+    sources: [
+      { label: "Core Spaces - Company website", url: "https://www.corespaces.com" },
+    ],
+  },
+  "THE SCION GROUP": {
+    ownership: "Privately held",
+    founded: "1999",
+    headquarters: "Chicago, Illinois",
+    tagline: "The largest privately held student-housing owner-operator in the United States.",
+    overview: [
+      "The Scion Group is a privately held owner and operator of student housing, founded in 1999. Through partnerships with institutional investors it has assembled one of the largest student-housing portfolios in the country.",
+      "It owns and operates off-campus communities serving many US universities.",
+    ],
+    highlights: [
+      "One of the largest owners and operators of US student housing.",
+      "Partners with institutional investors to own off-campus communities.",
+      "Focused exclusively on the student-housing asset class.",
+    ],
+    sources: [
+      { label: "The Scion Group - Company website", url: "https://www.thesciongroup.com" },
+    ],
+  },
+  "ASSET LIVING": {
+    ownership: "Privately held",
+    founded: "1986",
+    headquarters: "Houston, Texas",
+    tagline: "One of the largest third-party managers of student and conventional housing in the US.",
+    overview: [
+      "Asset Living is a privately held property management company founded in 1986. It is one of the largest third-party residential managers in the country, with a large student-housing management platform alongside conventional multifamily, build-to-rent, and affordable housing.",
+      "It manages communities on behalf of owners and investors nationwide.",
+    ],
+    highlights: [
+      "One of the largest third-party residential property managers in the US.",
+      "Major student-housing management platform plus conventional and affordable housing.",
+      "Manages communities for owners and institutional investors nationwide.",
+    ],
+    sources: [
+      { label: "Asset Living - Company website", url: "https://www.assetliving.com" },
+    ],
+  },
+  "CARDINAL GROUP COMPANIES": {
+    ownership: "Privately held",
+    founded: "2004",
+    headquarters: "Denver, Colorado",
+    tagline: "A privately held student-housing investor, developer, and manager.",
+    overview: [
+      "Cardinal Group Companies is a privately held, vertically integrated real estate investment, development, and management firm founded in 2004, with a strong focus on student housing.",
+      "It invests in, develops, and manages student and conventional multifamily communities across the United States.",
+    ],
+    highlights: [
+      "Vertically integrated across investment, development, and management.",
+      "Large third-party student-housing management platform.",
+      "Active in both student and conventional multifamily housing.",
+    ],
+    sources: [
+      { label: "Cardinal Group - Company website", url: "https://www.cardinalgroup.com" },
+    ],
+  },
+  "HARRISON STREET": {
+    ownership: "Privately held",
+    founded: "2005",
+    headquarters: "Chicago, Illinois",
+    tagline: "An alternative real-asset manager and major institutional investor in student housing.",
+    overview: [
+      "Harrison Street is a privately held investment management firm founded in 2005 that specializes in alternative real assets, including student housing, senior housing, life science, and data centers.",
+      "It is one of the largest institutional investors in US purpose-built student housing, typically partnering with operators to own communities.",
+    ],
+    highlights: [
+      "Specialist alternative real-asset manager across education, healthcare, and storage sectors.",
+      "One of the largest institutional owners of US student housing.",
+      "Partners with operating companies to acquire and develop communities.",
+    ],
+    sources: [
+      { label: "Harrison Street - Company website", url: "https://www.harrisonst.com" },
+    ],
+  },
+  "CAMPUS ADVANTAGE": {
+    ownership: "Privately held",
+    founded: "2003",
+    headquarters: "Austin, Texas",
+    tagline: "A privately held student-housing owner, operator, and third-party manager.",
+    overview: [
+      "Campus Advantage is a privately held student-housing company founded in 2003 that owns, operates, and provides third-party management for student communities across the United States.",
+      "It focuses on acquisitions, management, and consulting within the purpose-built student-housing sector.",
+    ],
+    highlights: [
+      "Owns, operates, and third-party manages student-housing communities nationwide.",
+      "Offers management and consulting services to other student-housing owners.",
+      "Focused specifically on the purpose-built student-housing sector.",
+    ],
+    sources: [
+      { label: "Campus Advantage - Company website", url: "https://www.campusadv.com" },
+    ],
+  },
+  "CA STUDENT LIVING": {
+    ownership: "Privately held (CA Ventures)",
+    founded: "2004",
+    headquarters: "Chicago, Illinois",
+    tagline: "The student-housing platform of CA Ventures, a private global real-asset manager.",
+    overview: [
+      "CA Student Living is the purpose-built student-housing platform of CA Ventures, a privately held global real estate investment management firm founded in 2004.",
+      "It develops, acquires, and operates student communities at universities in the United States and internationally.",
+    ],
+    highlights: [
+      "Student-housing arm of CA Ventures, a global private real-asset manager.",
+      "Develops, acquires, and operates communities in the US and abroad.",
+      "Part of a broader platform spanning multiple real estate sectors.",
+    ],
+    sources: [
+      { label: "CA Ventures - Company website", url: "https://www.ca-ventures.com" },
+    ],
+  },
 };
 
 /** Look up a company's reference profile by ticker, then by name. */
